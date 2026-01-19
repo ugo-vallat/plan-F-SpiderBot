@@ -137,12 +137,12 @@ void handler_reset() {
 
 	// configure HSI clock
 	RCC_CR |= RCC_CR_HSION;
-	while((RCC_CR & RCC_CR_HSIRDY) == 0);
+	while((RCC_CR & RCC_CR_HSIRDY) == 0) NOP;
 	RCC_CFGR_SW_SET(RCC_CFGR, RCC_HSI);
 
 	// configure HSE clock
 	RCC_CR |= RCC_CR_HSEON;
-	while((RCC_CR & RCC_CR_HSERDY) == 0);
+	while((RCC_CR & RCC_CR_HSERDY) == 0) NOP;
 
 	// configure AHB and AHP[12]
 	RCC_CFGGR_HPRE_SET(RCC_CFGR, RCC_HPRE_NODIV);
