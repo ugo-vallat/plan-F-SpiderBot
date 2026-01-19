@@ -17,15 +17,24 @@
 
 #include "io.h"
 
+typedef struct {
+    volatile uint32_t IMR;
+    volatile uint32_t EMR;
+    volatile uint32_t RTSR;
+    volatile uint32_t FTSR;
+    volatile uint32_t SWIER;
+    volatile uint32_t PR;
+} exti_t;
+
 // registers
 #define EXTI_BASE		0x40013C00
-#define EXTI_REG(o)		_IOREG(EXTI_BASE, o)
-#define EXTI_IMR		EXTI_REG(0x00)
-#define EXTI_EMR		EXTI_REG(0x04)
-#define EXTI_RTSR		EXTI_REG(0x08)
-#define EXTI_FTSR		EXTI_REG(0x0C)
-#define EXTI_SWIER		EXTI_REG(0x10)
-#define EXTI_PR			EXTI_REG(0x14)
+
+#ifdef __INIT__
+volatile exti_t *EXTI = (volatile exti_t*) EXTI_BASE;
+#else
+extern volatile exti_t *EXTI;
+#endif
+
 
 // interrupts
 #define EXTI0_IRQ		6

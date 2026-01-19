@@ -1,21 +1,33 @@
-/**
- *	Torpy - grid-follower wheeling and box delivering bot.
- *	Copyright (C) 2021  Université de Toulouse <casse@irit.fr>
- *
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- */
-#ifndef STM32F4_TIM_H
-#define STM32F4_TIM_H
+#ifndef __STM32F4_TIM_H__
+#define __STM32F4_TIM_H__
 
 #include "io.h"
+#include <stdint.h>
+
+typedef struct {
+    volatile uint32_t CR1;
+    volatile uint32_t CR2;
+    volatile uint32_t SMCR;
+    volatile uint32_t DIER;
+    volatile uint32_t SR;
+    volatile uint32_t EGR;
+    volatile uint32_t CCMR1;
+    volatile uint32_t CCMR2;
+    volatile uint32_t CCER;
+    volatile uint32_t CNT;
+    volatile uint32_t PSC;
+    volatile uint32_t ARR;
+    volatile uint32_t RCR;
+    volatile uint32_t CCR1;
+    volatile uint32_t CCR2;
+    volatile uint32_t CCR3;
+    volatile uint32_t CCR4;
+    volatile uint32_t DCR;
+    volatile uint32_t DMAR;
+    volatile uint32_t OR;
+} timx_t;
+
+
 
 // bases
 #define TIM2_BASE	0x40000000
@@ -27,34 +39,33 @@
 #define TIM12_BASE	0x40001800
 #define TIM13_BASE	0x40001C00
 #define TIM14_BASE	0x40002000
-
 #define TIM1_BASE	0x40010000
 #define TIM8_BASE	0x40010400
 #define TIM9_BASE	0x40014000
 #define TIM10_BASE	0x40014400
 #define TIM11_BASE	0x40014800
 
-// registers
-#define TIM_IOREG(n, o)	_IOREG(TIM##n##_BASE, o)
-#define TIM_CR1(n)		TIM_IOREG(n, 0x00)
-#define TIM_CR2(n)		TIM_IOREG(n, 0x04)
-#define TIM_SMCR(n)		TIM_IOREG(n, 0x08)
-#define TIM_DIER(n)		TIM_IOREG(n, 0x0C)
-#define TIM_SR(n)		TIM_IOREG(n, 0x10)
-#define TIM_EGR(n)		TIM_IOREG(n, 0x14)
-#define TIM_CCMR1(n)	TIM_IOREG(n, 0x18)
-#define TIM_CCMR2(n)	TIM_IOREG(n, 0x1C)
-#define TIM_CCER(n)		TIM_IOREG(n, 0x20)
-#define TIM_CNT(n)		TIM_IOREG(n, 0x24)
-#define TIM_PSC(n)		TIM_IOREG(n, 0x28)
-#define TIM_ARR(n)		TIM_IOREG(n, 0x2C)
-#define TIM_CCR1(n)		TIM_IOREG(n, 0x34)
-#define TIM_CCR2(n)		TIM_IOREG(n, 0x38)
-#define TIM_CCR3(n)		TIM_IOREG(n, 0x3C)
-#define TIM_CCR4(n)		TIM_IOREG(n, 0x40)
-#define TIM_DCR(n)		TIM_IOREG(n, 0x48)
-#define TIM_DMAR(n)		TIM_IOREG(n, 0x4C)
-#define TIM_OR(n)		TIM_IOREG(n, 0x50)
+#ifdef __INIT__
+#define INIT_TIM(n) volatile timx_t *TIM##n = (volatile timx_t *)TIM##n##_BASE;
+#else
+#define INIT_TIM(n) extern volatile timx_t *TIM##n;
+#endif
+
+
+INIT_TIM(1)
+INIT_TIM(2)
+INIT_TIM(3)
+INIT_TIM(4)
+INIT_TIM(5)
+INIT_TIM(6)
+INIT_TIM(7)
+INIT_TIM(8)
+INIT_TIM(9)
+INIT_TIM(10)
+INIT_TIM(11)
+INIT_TIM(12)
+INIT_TIM(13)
+INIT_TIM(14)
 
 // TIM_CR1
 #define TIM_CKD_CKINT	(0b00 << 8)
@@ -228,112 +239,6 @@
 #define TIM_CC1E		(1 << 0)
 
 
-// TIM2
-#define TIM2_CR1		TIM_IOREG(2, 0x00)
-#define TIM2_CR2		TIM_IOREG(2, 0x04)
-#define TIM2_SMCR		TIM_IOREG(2, 0x08)
-#define TIM2_DIER		TIM_IOREG(2, 0x0C)
-#define TIM2_SR			TIM_IOREG(2, 0x10)
-#define TIM2_EGR		TIM_IOREG(2, 0x14)
-#define TIM2_CCMR1		TIM_IOREG(2, 0x18)
-#define TIM2_CCMR2		TIM_IOREG(2, 0x1C)
-#define TIM2_CCER		TIM_IOREG(2, 0x20)
-#define TIM2_CNT		TIM_IOREG(2, 0x24)
-#define TIM2_PSC		TIM_IOREG(2, 0x28)
-#define TIM2_ARR		TIM_IOREG(2, 0x2C)
-#define TIM2_CCR1		TIM_IOREG(2, 0x34)
-#define TIM2_CCR2		TIM_IOREG(2, 0x38)
-#define TIM2_CCR3		TIM_IOREG(2, 0x3C)
-#define TIM2_CCR4		TIM_IOREG(2, 0x40)
-#define TIM2_DCR		TIM_IOREG(2, 0x48)
-#define TIM2_DMAR		TIM_IOREG(2, 0x4C)
-#define TIM2_OR			TIM_IOREG(2, 0x50)
-
-// TIM3
-#define TIM3_CR1		TIM_IOREG(3, 0x00)
-#define TIM3_CR2		TIM_IOREG(3, 0x04)
-#define TIM3_SMCR		TIM_IOREG(3, 0x08)
-#define TIM3_DIER		TIM_IOREG(3, 0x0C)
-#define TIM3_SR			TIM_IOREG(3, 0x10)
-#define TIM3_EGR		TIM_IOREG(3, 0x14)
-#define TIM3_CCMR1		TIM_IOREG(3, 0x18)
-#define TIM3_CCMR2		TIM_IOREG(3, 0x1C)
-#define TIM3_CCER		TIM_IOREG(3, 0x20)
-#define TIM3_CNT		TIM_IOREG(3, 0x24)
-#define TIM3_PSC		TIM_IOREG(3, 0x28)
-#define TIM3_ARR		TIM_IOREG(3, 0x2C)
-#define TIM3_CCR1		TIM_IOREG(3, 0x34)
-#define TIM3_CCR2		TIM_IOREG(3, 0x38)
-#define TIM3_CCR3		TIM_IOREG(3, 0x3C)
-#define TIM3_CCR4		TIM_IOREG(3, 0x40)
-#define TIM3_DCR		TIM_IOREG(3, 0x48)
-#define TIM3_DMAR		TIM_IOREG(3, 0x4C)
-#define TIM3_OR			TIM_IOREG(3, 0x50)
-
-// TIM4
-#define TIM4_CR1		TIM_IOREG(4, 0x00)
-#define TIM4_CR2		TIM_IOREG(4, 0x04)
-#define TIM4_SMCR		TIM_IOREG(4, 0x08)
-#define TIM4_DIER		TIM_IOREG(4, 0x0C)
-#define TIM4_SR			TIM_IOREG(4, 0x10)
-#define TIM4_EGR		TIM_IOREG(4, 0x14)
-#define TIM4_CCMR1		TIM_IOREG(4, 0x18)
-#define TIM4_CCMR2		TIM_IOREG(4, 0x1C)
-#define TIM4_CCER		TIM_IOREG(4, 0x20)
-#define TIM4_CNT		TIM_IOREG(4, 0x24)
-#define TIM4_PSC		TIM_IOREG(4, 0x28)
-#define TIM4_ARR		TIM_IOREG(4, 0x2C)
-#define TIM4_CCR1		TIM_IOREG(4, 0x34)
-#define TIM4_CCR2		TIM_IOREG(4, 0x38)
-#define TIM4_CCR3		TIM_IOREG(4, 0x3C)
-#define TIM4_CCR4		TIM_IOREG(4, 0x40)
-#define TIM4_DCR		TIM_IOREG(4, 0x48)
-#define TIM4_DMAR		TIM_IOREG(4, 0x4C)
-#define TIM4_OR			TIM_IOREG(4, 0x50)
-
-// TIM5
-#define TIM5_CR1		TIM_IOREG(5, 0x00)
-#define TIM5_CR2		TIM_IOREG(5, 0x04)
-#define TIM5_SMCR		TIM_IOREG(5, 0x08)
-#define TIM5_DIER		TIM_IOREG(5, 0x0C)
-#define TIM5_SR			TIM_IOREG(5, 0x10)
-#define TIM5_EGR		TIM_IOREG(5, 0x14)
-#define TIM5_CCMR1		TIM_IOREG(5, 0x18)
-#define TIM5_CCMR2		TIM_IOREG(5, 0x1C)
-#define TIM5_CCER		TIM_IOREG(5, 0x20)
-#define TIM5_CNT		TIM_IOREG(5, 0x24)
-#define TIM5_PSC		TIM_IOREG(5, 0x28)
-#define TIM5_ARR		TIM_IOREG(5, 0x2C)
-#define TIM5_CCR1		TIM_IOREG(5, 0x34)
-#define TIM5_CCR2		TIM_IOREG(5, 0x38)
-#define TIM5_CCR3		TIM_IOREG(5, 0x3C)
-#define TIM5_CCR4		TIM_IOREG(5, 0x40)
-#define TIM5_DCR		TIM_IOREG(5, 0x48)
-#define TIM5_DMAR		TIM_IOREG(5, 0x4C)
-#define TIM5_OR			TIM_IOREG(5, 0x50)
-
-// TIM6
-#define TIM6_CR1		TIM_IOREG(6, 0x00)
-#define TIM6_CR2		TIM_IOREG(6, 0x04)
-#define TIM6_SMCR		TIM_IOREG(6, 0x08)
-#define TIM6_DIER		TIM_IOREG(6, 0x0C)
-#define TIM6_SR			TIM_IOREG(6, 0x10)
-#define TIM6_EGR		TIM_IOREG(6, 0x14)
-#define TIM6_CCMR1		TIM_IOREG(6, 0x18)
-#define TIM6_CCMR2		TIM_IOREG(6, 0x1C)
-#define TIM6_CCER		TIM_IOREG(6, 0x20)
-#define TIM6_CNT		TIM_IOREG(6, 0x24)
-#define TIM6_PSC		TIM_IOREG(6, 0x28)
-#define TIM6_ARR		TIM_IOREG(6, 0x2C)
-#define TIM6_CCR1		TIM_IOREG(6, 0x34)
-#define TIM6_CCR2		TIM_IOREG(6, 0x38)
-#define TIM6_CCR3		TIM_IOREG(6, 0x3C)
-#define TIM6_CCR4		TIM_IOREG(6, 0x40)
-#define TIM6_DCR		TIM_IOREG(6, 0x48)
-#define TIM6_DMAR		TIM_IOREG(6, 0x4C)
-#define TIM6_OR			TIM_IOREG(6, 0x50)
-
-
 // interrupts
 #define TIM1_BRK_IRQ	24
 #define TIM1_UP_IRQ		25
@@ -356,4 +261,4 @@
 #define TIM13_IRQ		44
 #define TIM14_IRQ		45
 
-#endif	// STM32F4_TIM_H
+#endif	// __STM32F4_TIM_H__

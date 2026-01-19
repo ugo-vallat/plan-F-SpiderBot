@@ -29,42 +29,6 @@
 #define APB1_CLK	(42 MHZ)
 #define APB2_CLK	(84 MHZ)
 
-// AHB1
-#define ID_GPIOA	0
-#define ID_GPIOB	1
-#define ID_GPIOC	2
-#define ID_GPIOD	3
-#define ID_GPIOE	4
-#define ID_GPIOF	5
-#define ID_GPIOG	6
-#define ID_GPIOH	7
-#define ID_GPIOI	8
-
-// APB1
-#define ID_TIM2		0
-#define ID_TIM3		1
-#define ID_TIM4		2
-#define ID_TIM5		3
-#define ID_TIM6		4
-#define ID_TIM7		5
-#define ID_TIM12	6
-#define ID_TIM13	7
-#define ID_TIM14	8
-
-// APB2
-#define ID_TIM1		0
-#define ID_TIM8		1
-#define ID_ADC1		8
-#define ID_ADC2		9
-#define ID_ADC3		10
-
-// LEDS and buttons
-#define LED_GREEN	0x3c
-#define LED_ORANGE	0x3d
-#define LED_RED		0x3e
-#define LED_BLUE	0x3f
-#define SW_USER		0x00
-
 // bit range macros
 #define MASK(l)	((1 << (l))-1)
 #define GET_BITS(x, i, l)		(((x)>>(i))&MASK(l))

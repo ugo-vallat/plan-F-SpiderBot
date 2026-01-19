@@ -17,15 +17,23 @@
 
 #include "io.h"
 
+typedef struct {
+    volatile uint32_t MEMRMP;
+    volatile uint32_t PMC;
+    volatile uint32_t EXTICR1;
+    volatile uint32_t EXTICR2;
+    volatile uint32_t EXTICR3;
+    volatile uint32_t EXTICR4;
+    volatile uint32_t CMPCR;
+} syscfg_t;
+
 // registers
 #define SYSCFG_BASE		0x40013800
-#define SYSCFG_REG(o)	_IOREG(SYSCFG_BASE, o)
-#define SYSCFG_MEMRMP	SYSCFG_REG(0x00)
-#define SYSCFG_PMC		SYSCFG_REG(0x04)
-#define SYSCFG_EXTICR1	SYSCFG_REG(0x08)
-#define SYSCFG_EXTICR2	SYSCFG_REG(0x0C)
-#define SYSCFG_EXTICR3	SYSCFG_REG(0x10)
-#define SYSCFG_EXTICR4	SYSCFG_REG(0x14)
-#define SYSCFG_CMPCR	SYSCFG_REG(0x20)
+#ifdef __INIT__
+volatile syscfg_t *SYSCFG = (volatile syscfg_t*) SYSCFG_BASE;
+#else
+extern volatile syscfg_t *SYSCFG;
+#endif
+
 
 #endif	// STM32F4_SYSCFG_H

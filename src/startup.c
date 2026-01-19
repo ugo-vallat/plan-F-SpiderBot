@@ -136,30 +136,30 @@ void handler_reset() {
 	//	168		42		84		8		336		2		7
 
 	// configure HSI clock
-	RCC_CR |= RCC_CR_HSION;
-	while((RCC_CR & RCC_CR_HSIRDY) == 0) NOP;
-	RCC_CFGR_SW_SET(RCC_CFGR, RCC_HSI);
+	RCC->CR |= RCC_CR_HSION;
+	while((RCC->CR & RCC_CR_HSIRDY) == 0) NOP;
+	RCC_CFGR_SW_SET(RCC->CFGR, RCC_HSI);
 
 	// configure HSE clock
-	RCC_CR |= RCC_CR_HSEON;
-	while((RCC_CR & RCC_CR_HSERDY) == 0) NOP;
+	RCC->CR |= RCC_CR_HSEON;
+	while((RCC->CR & RCC_CR_HSERDY) == 0) NOP;
 
 	// configure AHB and AHP[12]
-	RCC_CFGGR_HPRE_SET(RCC_CFGR, RCC_HPRE_NODIV);
-	RCC_CFGGR_PPRE1_SET(RCC_CFGR, RCC_PPRE_DIV4);
-	RCC_CFGGR_PPRE2_SET(RCC_CFGR, RCC_PPRE_DIV2);
+	RCC_CFGGR_HPRE_SET(RCC->CFGR, RCC_HPRE_NODIV);
+	RCC_CFGGR_PPRE1_SET(RCC->CFGR, RCC_PPRE_DIV4);
+	RCC_CFGGR_PPRE2_SET(RCC->CFGR, RCC_PPRE_DIV2);
 
 	// configure PLL
-	RCC_CR &= ~RCC_CR_PLLON;
+	RCC->CR &= ~RCC_CR_PLLON;
 	x = 0;
 	x |= RCC_PLLCFGR_SRC_HSE;
 	RCC_PLLCFGR_M_SET(x, 8);
 	RCC_PLLCFGR_N_SET(x, 336);
 	RCC_PLLCFGR_P_SET(x, RCC_PLLP2);
 	RCC_PLLCFGR_Q_SET(x, 7);
-	RCC_PLLCFGR = x;
-	RCC_CR |= RCC_CR_PLLON;
-	while((RCC_CR & RCC_CR_PLLRDY) == 0);
+	RCC->PLLCFGR = x;
+	RCC->CR |= RCC_CR_PLLON;
+	while((RCC->CR & RCC_CR_PLLRDY) == 0);
 
 	// configure flash
 	x = FLASH_ACR;
@@ -169,12 +169,12 @@ void handler_reset() {
 	FLASH_ACR = x;
 	
 	// select PLL as SYSCLK
-	RCC_CFGR_SW_SET(RCC_CFGR, RCC_PLL);
-	while(RCC_CFGR_SWS_GET(RCC_CFGR) != RCC_PLL);
-	RCC_CR &= ~RCC_CR_HSION;
+	RCC_CFGR_SW_SET(RCC->CFGR, RCC_PLL);
+	while(RCC_CFGR_SWS_GET(RCC->CFGR) != RCC_PLL);
+	RCC->CR &= ~RCC_CR_HSION;
 
 	// rmap SRAM at 0
-	SYSCFG_MEMRMP = 0b11;
+	SYSCFG->MEMRMP = 0b11;
 
 	// copy data from FLASH to RAM
 	p = &_data_flash;
