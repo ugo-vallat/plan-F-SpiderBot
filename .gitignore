@@ -3,8 +3,9 @@
 *.log
 *.d
 spiderbot.elf
-
+compile_commands.json
 
 # Dossiers
 build/
 .vscode/
+.cache/
