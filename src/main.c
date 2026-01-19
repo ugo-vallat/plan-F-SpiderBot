@@ -1,6 +1,3 @@
-
-
-#define __INIT__
 #include <stm32f4/adc.h>
 #include <stm32f4/dac.h>
 #include <stm32f4/exti.h>
@@ -15,7 +12,7 @@
 #include <log.h>
 #include <bluetooth.h>
 #include <led.h>
-
+#include <servomotor.h>
 
 /**
  * @brief Call init function of each module
@@ -25,6 +22,7 @@ void init(void) {
     init_log();
     init_time();
     init_bluetooth();
+    init_servomotor();
 
 }
 

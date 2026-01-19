@@ -2,6 +2,7 @@
 #define __LOG__H__
 
 #include <defines.h>
+#include <tinyprintf.h>
 
 #define COLOR_ENABLE 1 // 1 for colorfull messages, 0 else
 

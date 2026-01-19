@@ -23,7 +23,7 @@ void handler_time(void) {
 }
 
 void init_time(void) {
-    printl("[%s] ... ", __func__);
+    PRINTL("[%s] ... ", __func__);
     cur_time = 0;
 
     RCC->APB1ENR |= RCC_TIM6EN;
@@ -45,7 +45,7 @@ void init_time(void) {
     ENABLE_IRQS;
 
     TIME_TIM->CR1 = TIM_CEN;
-    printl("OK\n");
+    PRINTL("OK\n");
 }
 
 time_t get_time(void) {

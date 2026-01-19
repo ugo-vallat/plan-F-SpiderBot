@@ -5,28 +5,28 @@
 #include <stdint.h>
 
 typedef struct {
-    volatile uint32_t CR1;
-    volatile uint32_t CR2;
-    volatile uint32_t SMCR;
-    volatile uint32_t DIER;
-    volatile uint32_t SR;
-    volatile uint32_t EGR;
-    volatile uint32_t CCMR1;
-    volatile uint32_t CCMR2;
-    volatile uint32_t CCER;
-    volatile uint32_t CNT;
-    volatile uint32_t PSC;
-    volatile uint32_t ARR;
-    volatile uint32_t RCR;
-    volatile uint32_t CCR1;
-    volatile uint32_t CCR2;
-    volatile uint32_t CCR3;
-    volatile uint32_t CCR4;
-    volatile uint32_t DCR;
-    volatile uint32_t DMAR;
-    volatile uint32_t OR;
+    volatile uint32_t CR1;      // 0x00
+    volatile uint32_t CR2;      // 0x04
+    volatile uint32_t SMCR;     // 0x08
+    volatile uint32_t DIER;     // 0x0C
+    volatile uint32_t SR;       // 0x10
+    volatile uint32_t EGR;      // 0x14
+    volatile uint32_t CCMR1;    // 0x18
+    volatile uint32_t CCMR2;    // 0x1C
+    volatile uint32_t CCER;     // 0x20
+    volatile uint32_t CNT;      // 0x24
+    volatile uint32_t PSC;      // 0x28
+    volatile uint32_t ARR;      // 0x2C
+    volatile uint32_t RCR;      // 0x30
+    volatile uint32_t CCR1;     // 0x34
+    volatile uint32_t CCR2;     // 0x38
+    volatile uint32_t CCR3;     // 0x3C
+    volatile uint32_t CCR4;     // 0x40
+    volatile uint32_t BDTR;     // 0x44
+    volatile uint32_t DCR;      // 0x48
+    volatile uint32_t DMAR;     // 0x4C
+    volatile uint32_t OR;       // 0x50
 } timx_t;
-
 
 
 // bases
@@ -45,27 +45,22 @@ typedef struct {
 #define TIM10_BASE	0x40014400
 #define TIM11_BASE	0x40014800
 
-#ifdef __INIT__
-#define INIT_TIM(n) volatile timx_t *TIM##n = (volatile timx_t *)TIM##n##_BASE;
-#else
-#define INIT_TIM(n) extern volatile timx_t *TIM##n;
-#endif
+#define TIM_PTR(n)  ((volatile timx_t *)TIM##n##_BASE)
 
-
-INIT_TIM(1)
-INIT_TIM(2)
-INIT_TIM(3)
-INIT_TIM(4)
-INIT_TIM(5)
-INIT_TIM(6)
-INIT_TIM(7)
-INIT_TIM(8)
-INIT_TIM(9)
-INIT_TIM(10)
-INIT_TIM(11)
-INIT_TIM(12)
-INIT_TIM(13)
-INIT_TIM(14)
+#define TIM1    TIM_PTR(1)
+#define TIM2    TIM_PTR(2)
+#define TIM3    TIM_PTR(3)
+#define TIM4    TIM_PTR(4)
+#define TIM5    TIM_PTR(5)
+#define TIM6    TIM_PTR(6)
+#define TIM7    TIM_PTR(7)
+#define TIM8    TIM_PTR(8)
+#define TIM9    TIM_PTR(9)
+#define TIM10   TIM_PTR(10)
+#define TIM11   TIM_PTR(11)
+#define TIM12   TIM_PTR(12)
+#define TIM13   TIM_PTR(13)
+#define TIM14   TIM_PTR(14)
 
 // TIM_CR1
 #define TIM_CKD_CKINT	(0b00 << 8)
@@ -178,10 +173,10 @@ INIT_TIM(14)
 #define TIM_OC2M_PWM2	(0b111 << 12)
 #define TIM_OC2PE		(1 << 11)
 #define TIM_OC2FE		(1 << 10)
-#define TIM_CCS2S_OUT	(0b00 << 8)
-#define TIM_CCS2S_IN2	(0b01 << 8)
-#define TIM_CCS2S_IN1	(0b10 << 8)
-#define TIM_CCS2S_TRC	(0b11 << 8)
+#define TIM_CC2S_OUT	(0b00 << 8)
+#define TIM_CC2S_IN2	(0b01 << 8)
+#define TIM_CC2S_IN1	(0b10 << 8)
+#define TIM_CC2S_TRC	(0b11 << 8)
 #define TIM_OC1CE		(1 << 7)
 #define TIM_OC1M_FROZEN	(0b000 << 4)
 #define TIM_OC1M_SET	(0b001 << 4)
@@ -191,10 +186,10 @@ INIT_TIM(14)
 #define TIM_OC1M_PWM2	(0b111 << 4)
 #define TIM_OC1PE		(1 << 3)
 #define TIM_OC1FE		(1 << 2)
-#define TIM_CCS1S_OUT	(0b00 << 0)
-#define TIM_CCS1S_IN1	(0b01 << 8)
-#define TIM_CCS1S_IN2	(0b10 << 8)
-#define TIM_CCS1S_TRC	(0b11 << 8)
+#define TIM_CC1S_OUT	(0b00 << 0)
+#define TIM_CC1S_IN1	(0b01 << 8)
+#define TIM_CC1S_IN2	(0b10 << 8)
+#define TIM_CC1S_TRC	(0b11 << 8)
 
 // CCMR2
 #define TIM_OC4CE		(1 << 15)
@@ -206,10 +201,10 @@ INIT_TIM(14)
 #define TIM_OC4M_PWM2	(0b111 << 12)
 #define TIM_OC4PE		(1 << 11)
 #define TIM_OC4FE		(1 << 10)
-#define TIM_CCS4S_OUT	(0b00 << 8)
-#define TIM_CCS4S_IN3	(0b01 << 8)
-#define TIM_CCS4S_IN4	(0b10 << 8)
-#define TIM_CCS4S_TRC	(0b11 << 8)
+#define TIM_CC4S_OUT	(0b00 << 8)
+#define TIM_CC4S_IN3	(0b01 << 8)
+#define TIM_CC4S_IN4	(0b10 << 8)
+#define TIM_CC4S_TRC	(0b11 << 8)
 #define TIM_OC3CE		(1 << 7)
 #define TIM_OC3M_FROZEN	(0b000 << 4)
 #define TIM_OC3M_SET	(0b001 << 4)
@@ -219,10 +214,10 @@ INIT_TIM(14)
 #define TIM_OC3M_PWM2	(0b111 << 4)
 #define TIM_OC3PE		(1 << 3)
 #define TIM_OC3RE		(1 << 2)
-#define TIM_CCS3S_OUT	(0b00 << 0)
-#define TIM_CCS3S_IN3	(0b01 << 8)
-#define TIM_CCS3S_IN4	(0b10 << 8)
-#define TIM_CCS3S_TRC	(0b11 << 8)
+#define TIM_CC3S_OUT	(0b00 << 0)
+#define TIM_CC3S_IN3	(0b01 << 8)
+#define TIM_CC3S_IN4	(0b10 << 8)
+#define TIM_CC3S_TRC	(0b11 << 8)
 
 // CCER
 #define TIM_CC4NP		(1 << 15)
@@ -238,6 +233,8 @@ INIT_TIM(14)
 #define TIM_CC1P		(1 << 1)
 #define TIM_CC1E		(1 << 0)
 
+// BDTR
+#define TIM_BDTR_MOE    (0b1 << 15)
 
 // interrupts
 #define TIM1_BRK_IRQ	24

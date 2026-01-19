@@ -29,11 +29,7 @@ typedef struct {
 
 // registers
 #define SYSCFG_BASE		0x40013800
-#ifdef __INIT__
-volatile syscfg_t *SYSCFG = (volatile syscfg_t*) SYSCFG_BASE;
-#else
-extern volatile syscfg_t *SYSCFG;
-#endif
+#define SYSCFG          ((volatile syscfg_t*) SYSCFG_BASE)
 
 
 #endif	// STM32F4_SYSCFG_H

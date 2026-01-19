@@ -29,12 +29,7 @@ typedef struct {
 // registers
 #define EXTI_BASE		0x40013C00
 
-#ifdef __INIT__
-volatile exti_t *EXTI = (volatile exti_t*) EXTI_BASE;
-#else
-extern volatile exti_t *EXTI;
-#endif
-
+#define EXTI ((volatile exti_t *) EXTI_BASE);
 
 // interrupts
 #define EXTI0_IRQ		6

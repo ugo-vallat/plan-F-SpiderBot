@@ -27,23 +27,21 @@ typedef struct {
 #define GPIO_SIZE		0x400
 #define GPIO_BASE(n)	(GPIO_START + (n) * GPIO_SIZE)
 
-#ifdef __INIT__
-#define INIT_GPIO(n, l) volatile gpio_t *GPIO##l = (volatile gpio_t *)GPIO_BASE(n);
-#else
-#define INIT_GPIO(n, l) extern volatile gpio_t *GPIO##l;
-#endif
+#define GPIO_PTR(n)   ((volatile gpio_t *)GPIO_BASE(n))
 
-INIT_GPIO(0,A)
-INIT_GPIO(1,B)
-INIT_GPIO(2,C)
-INIT_GPIO(3,D)
-INIT_GPIO(4,E)
-INIT_GPIO(5,F)
-INIT_GPIO(6,G)
-INIT_GPIO(7,H)
-INIT_GPIO(8,I)
-INIT_GPIO(9,J)
-INIT_GPIO(10,K)
+#define GPIOA   GPIO_PTR(0)
+#define GPIOB   GPIO_PTR(1)
+#define GPIOC   GPIO_PTR(2)
+#define GPIOD   GPIO_PTR(3)
+#define GPIOE   GPIO_PTR(4)
+#define GPIOF   GPIO_PTR(5)
+#define GPIOG   GPIO_PTR(6)
+#define GPIOH   GPIO_PTR(7)
+#define GPIOI   GPIO_PTR(8)
+#define GPIOJ   GPIO_PTR(9)
+#define GPIOK   GPIO_PTR(10)
+
+
 
 #define GPIO_MODER_IN	0b00
 #define GPIO_MODER_OUT	0b01

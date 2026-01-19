@@ -54,12 +54,8 @@ typedef struct {
 } rcc_t;
 
 
-#define RCC_BASE		0x40023800
-#ifdef __INIT__
-volatile rcc_t *RCC = (volatile rcc_t*) RCC_BASE;
-#else
-extern volatile rcc_t *RCC;
-#endif
+#define RCC_BASE    0x40023800
+#define RCC         ((volatile rcc_t*) RCC_BASE)
 
 
 #define RCC_HSI				0b00
