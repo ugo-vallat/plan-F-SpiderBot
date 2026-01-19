@@ -1,3 +1,4 @@
+#include "time.h"
 #include <tinyprintf.h>
 #include <log.h>
 
@@ -7,11 +8,12 @@
  */
 void init(void) {
     init_log();
-    
+    init_time();
 }
 
 void main_loop(void) {
     while(true) {
+        
     }
 }
 

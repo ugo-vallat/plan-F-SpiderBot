@@ -23,12 +23,12 @@ void printl(const char *format, ...) {
     va_list args;
     va_start(args, format);
     printf(format, args);
-    printf("\n");
     va_end(args);
 }
 
 void warnl(const char *file_name, const char *fun_name, const char *format, ...) {
     va_list args;
+    va_start(args, format);
     printf(YELLOW);
     printf("[warnl] %s > %s : ", file_name, fun_name);
     printf(format, args);
@@ -40,6 +40,7 @@ void warnl(const char *file_name, const char *fun_name, const char *format, ...)
 bool assertl(bool assert, const char *file_name, const char *fun_name, const char *format, ...) {
     if(!assert) {
         va_list args;
+        va_start(args, format);
         printf(ORANGE);
         printf("[assertl] %s > %s : ", file_name, fun_name);
         printf(format, args);

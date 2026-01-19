@@ -23,7 +23,7 @@ ARCH=arm-none-eabi-
 CC=$(ARCH)gcc
 AS=$(ARCH)as
 OBJCOPY=$(ARCH)objcopy
-CFLAGS += -g3 -Wall -O0 -MMD
+CFLAGS += -g3 -Wall -O0 -MMD -std=c17
 ASFLAGS += -g
 CFLAGS += \
 	-Tscripts/link.ld \

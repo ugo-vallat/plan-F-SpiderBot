@@ -5,7 +5,7 @@
 
 #define COLOR_ENABLE 1 // 1 for colorfull messages, 0 else
 
-#define PRINTL(format, ...) printl(__func__, format, ##__VA_ARGS__)
+#define PRINTL(format, ...) printf(format, ##__VA_ARGS__)
 #define WARNL(format, ...) warnl(__file__, __func__, format, ##__VA_ARGS__)
 #define ASSERTL(assert, format, ...) assertl(assert, __file__, __func__, format, ##__VA_ARGS__)
 
