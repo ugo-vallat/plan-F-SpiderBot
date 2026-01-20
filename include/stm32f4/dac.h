@@ -16,11 +16,30 @@
 #define STM32F4_DAC_H
 
 #include "io.h"
+#include <stdint.h>
+
+typedef struct{
+    volatile uint32_t CR;       //0x00
+    volatile uint32_t SWTRIGR;  //0x04
+    volatile uint32_t DHR12R1;  //0x08
+    volatile uint32_t DHR12L1;  //0x0c
+    volatile uint32_t DHR8R1;   //0x10
+    volatile uint32_t DHR12R2;  //0x14
+    volatile uint32_t DHR12L2;  //0x18
+    volatile uint32_t DHR8R2;   //0x1C
+    volatile uint32_t DHR12RD;  //0x20
+    volatile uint32_t DHR12LD;  //0x24
+    volatile uint32_t DHR8RD;   //0x28
+    volatile uint32_t DOR1;     //0x2C
+    volatile uint32_t DOR2;     //0x30
+    volatile uint32_t SR;       //0x34
+
+} dac_t;
 
 #define DAC_BASE	0x40007400
-#define DAC_REG(o)	_IOREG(DAC_BASE, o)
 
-#define DAC_CR			DAC_REG(0x00)
+#define DAC ((volatile dac_t*) DAC_BASE)
+
 #define DAC_NOWAVE		0b00
 #define DAC_NOISE		0b01
 #define DAC_TRIANGLE	0b10
@@ -39,23 +58,9 @@
 #define DAC_BOFF1		(1 << 1)
 #define DAC_EN1			(1 << 0)
 
-#define DAC_SWTRIGR		DAC_REG(0x04)
 #define DAC_SWTRIG2		(1 << 1)
 #define DAC_SWTRIG1		(1 << 0)
 
-#define DAC_DHR12R1		DAC_REG(0x08)
-#define DAC_DHR12L1		DAC_REG(0x0c)
-#define DAC_DHR8R1		DAC_REG(0x10)
-#define DAC_DHR12R2		DAC_REG(0x14)
-#define DAC_DHR12L2		DAC_REG(0x18)
-#define DAC_DHR8R2		DAC_REG(0x1C)
-#define DAC_DHR12RD		DAC_REG(0x20)
-#define DAC_DHR12LD		DAC_REG(0x24)
-#define DAC_DHR8RD		DAC_REG(0x28)
-#define DAC_DOR1		DAC_REG(0x2C)
-#define DAC_DOR2		DAC_REG(0x30)
-
-#define DAC_SR			DAC_REG(0x34)
 #define DAC_DMAUDR2		(1 << 29)
 
 #endif	// STM32F4_GPIO_H

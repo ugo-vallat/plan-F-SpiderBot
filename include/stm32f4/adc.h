@@ -16,25 +16,46 @@
 #define STM32F4_DAC_H
 
 #include "io.h"
+#include <stdint.h>
+
+typedef struct{
+    volatile uint32_t SR;       // 0x00
+    volatile uint32_t CR1;      // 0x04
+    volatile uint32_t CR2;      // 0x08
+    volatile uint32_t SMPR1;    // 0x0C
+    volatile uint32_t SMPR2;    // 0x10
+    volatile uint32_t JOFR1;    // 0x14
+    volatile uint32_t JOFR2;    // 0x18
+    volatile uint32_t JOFR3;    // 0x1C
+    volatile uint32_t JOFR4;    // 0x20
+    volatile uint32_t HTR;      // 0x24
+    volatile uint32_t LTR;      // 0x28
+    volatile uint32_t SQR1;     // 0x2C
+    volatile uint32_t SQR2;     // 0x30
+    volatile uint32_t SQR3;     // 0x34
+    volatile uint32_t JSQR;     // 0x38
+    volatile uint32_t JDR1;     // 0x3C
+    volatile uint32_t JDR2;     // 0x40
+    volatile uint32_t JDR3;     // 0x44
+    volatile uint32_t JDR;      // 0x48
+    volatile uint32_t DR;       // 0x4C
+
+} adcx_t ;
 
 #define ADC1_BASE	0x40012000
 #define ADC2_BASE	0x40012100
 #define ADC3_BASE	0x40012200
 #define ADCC_BASE	0x40012300
-#define ADC1_REG(o)	_IOREG(ADC1_BASE, o)
-#define ADC2_REG(o)	_IOREG(ADC2_BASE, o)
-#define ADC3_REG(o)	_IOREG(ADC3_BASE, o)
-#define ADCC_REG(o)	_IOREG(ADCC_BASE, o)
 
-#define ADC1_SR		ADC1_REG(0x00)
-#define ADC2_SR		ADC2_REG(0x00)
-#define ADC3_SR		ADC3_REG(0x00)
+#define ADC_PTR(n)  ((volatile adcx_t *)ADC##n##_BASE)
+
+#define ADC1    ADC_PTR(1)
+#define ADC2    ADC_PTR(2)
+#define ADC3    ADC_PTR(3)
+
 #define ADC_JEOC	(1 << 2)
 #define ADC_EOC		(1 << 1)
 
-#define ADC1_CR1	ADC1_REG(0x04)
-#define ADC2_CR1	ADC2_REG(0x04)
-#define ADC3_CR1	ADC3_REG(0x04)
 #define ADC_OVERIE	(1 << 26)
 #define ADC_12b		0b00
 #define ADC_10b		0b01
@@ -45,9 +66,6 @@
 #define ADC_SCAN	(1 << 8)
 #define ADC_EOCIE	(1 << 5)
 
-#define ADC1_CR2	ADC1_REG(0x08)
-#define ADC2_CR2	ADC2_REG(0x08)
-#define ADC3_CR2	ADC3_REG(0x08)
 #define ADC_SWSTART	(1 << 30)
 #define ADC_EXTEN_dis		(0b00 << 28)
 #define ADC_EXTEN_rise		(0b01 << 28)
@@ -73,50 +91,6 @@
 #define ADC_EOCS	(1 << 10)
 #define ADC_CONT	(1 << 1)
 #define ADC_ADON	(1 << 0)
-
-#define ADC1_SMPR1	ADC1_REG(0x0C)
-#define ADC2_SMPR1	ADC2_REG(0x0C)
-#define ADC3_SMPR1	ADC3_REG(0x0C)
-
-#define ADC1_SMPR2	ADC1_REG(0x10)
-#define ADC2_SMPR2	ADC2_REG(0x10)
-#define ADC3_SMPR2	ADC3_REG(0x10)
-
-#define ADC1_JOFR(n)	ADC1_REG(0x14 + 4*(n))
-#define ADC2_JOFR(n)	ADC2_REG(0x14 + 4*(n))
-#define ADC2_JOFR(n)	ADC2_REG(0x14 + 4*(n))
-
-#define ADC1_HTR	ADC1_REG(0x24)
-#define ADC2_HTR	ADC2_REG(0x24)
-#define ADC3_HTR	ADC3_REG(0x24)
-
-#define ADC1_LTR	ADC1_REG(0x28)
-#define ADC2_LTR	ADC2_REG(0x28)
-#define ADC3_LTR	ADC3_REG(0x28)
-
-#define ADC1_SQR1	ADC1_REG(0x2C)
-#define ADC2_SQR1	ADC2_REG(0x2C)
-#define ADC3_SQR1	ADC3_REG(0x2C)
-
-#define ADC1_SQR2	ADC1_REG(0x30)
-#define ADC2_SQR2	ADC2_REG(0x30)
-#define ADC3_SQR2	ADC3_REG(0x30)
-
-#define ADC1_SQR3	ADC1_REG(0x34)
-#define ADC2_SQR3	ADC2_REG(0x34)
-#define ADC3_SQR3	ADC3_REG(0x34)
-
-#define ADC1_JSQR	ADC1_REG(0x38)
-#define ADC2_JSQR	ADC2_REG(0x38)
-#define ADC3_JSQR	ADC3_REG(0x38)
-
-#define ADC1_JDR(n)	ADC1_REG(0x3C + 4*(n))
-#define ADC2_JDR(n)	ADC2_REG(0x3C + 4*(n))
-#define ADC2_JDR(n)	ADC2_REG(0x3C + 4*(n))
-
-#define ADC1_DR		ADC1_REG(0x4C)
-#define ADC2_DR		ADC2_REG(0x4C)
-#define ADC2_DR		ADC2_REG(0x4C)
 
 #define ADC_CSR		ADCC_REG(0x00)
 #define ADC_CCR		ADCC_REG(0x04)
