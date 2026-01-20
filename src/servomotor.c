@@ -8,7 +8,6 @@
 
 #define SM_TIMER_1  TIM2
 #define SM_TIMER_2  TIM3
-#define SM_GPIO         GPIOB
 
 #define SM_PSC      26
 #define SM_ARR      (APB2_CLK / (SM_PSC * 50))
