@@ -38,16 +38,16 @@ Spider robot on stm32
 - B4  : SM2 (AF2 - TIM3_CH1)
 - B5  : SM3 (AF2 - TIM3_CH2)
 - B6  : SM4 (AF2 - TIM4_CH1)
-- B7  : SM5 (AF2 - TIM4_CH1)
-- B8  : SM6 (AF2 - TIM4_CH1)
-- B9  : SM7 (AF2 - TIM4_CH1)
+- B7  : SM5 (AF2 - TIM4_CH2)
+- B8  : SM6 (AF2 - TIM4_CH3)
+- B9  : SM7 (AF2 - TIM4_CH4)
 - B10 :
 - B11 :
 - B12 :
 - B13 :
 - B14 :
 - B15 :
-- C0  :
+- C0  : led
 - C1  :
 - C2  :
 - C3  :

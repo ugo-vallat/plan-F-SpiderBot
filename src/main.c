@@ -23,11 +23,21 @@ void init(void) {
     init_time();
     init_bluetooth();
     init_servomotor();
-
+    RCC->AHB1ENR |= RCC_GPIOCEN;
+    RCC->AHB1ENR |= RCC_GPIODEN;
+    INIT_LED(GPIOC, 0);
+    INIT_LED(GPIOD, 14);
+    // (*(volatile uint32_t *)((0x40020000 + (3) * 0x400) + 0x00)) = REP_BITS((*(volatile uint32_t *)((0x40020000 + (3) * 0x400) + 0x00)), 14*2, 2, GPIO_MODER_OUT);
+    // (*(volatile uint32_t *)((0x40020000 + (3) * 0x400) + 0x04)) &= ~(1<<14);
 }
 
 void main_loop(void) {
     while(true) {
+        PRINTL("main loop\n");
+        sm_move(10000000, 1);
+        SWITCH_LED(GPIOC, 0);
+        SWITCH_LED(GPIOD, 14);
+        // (*(volatile uint32_t *)((0x40020000 + (3) * 0x400) + 0x14)) ^= (1 << 14);
     }
 }
 

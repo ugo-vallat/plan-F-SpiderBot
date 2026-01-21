@@ -5,17 +5,16 @@
 
 
 typedef struct {
-    volatile uint32_t REG;
-    volatile uint32_t MODER;
-    volatile uint32_t OTYPER;
-    volatile uint32_t OSPEEDR;
-    volatile uint32_t PUPDR;
-    volatile uint32_t IDR;
-    volatile uint32_t ODR;
-    volatile uint32_t BSRR;
-    volatile uint32_t LCKR;
-    volatile uint32_t AFRL;
-    volatile uint32_t AFRH;
+    volatile uint32_t MODER;    // 0x00
+    volatile uint32_t OTYPER;   // 0x04
+    volatile uint32_t OSPEEDR;  // 0x08
+    volatile uint32_t PUPDR;    // 0x0C
+    volatile uint32_t IDR;      // 0x10
+    volatile uint32_t ODR;      // 0x14
+    volatile uint32_t BSRR;     // 0x18
+    volatile uint32_t LCKR;     // 0x1C
+    volatile uint32_t AFRL;     // 0x20
+    volatile uint32_t AFRH;     // 0x24
 } gpio_t;
 
 #define GPIO_INST(n)	((n) >> 4)		
