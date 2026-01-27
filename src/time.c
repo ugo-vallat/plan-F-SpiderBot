@@ -22,7 +22,7 @@ void handler_time(void) {
     cur_time++;
 }
 
-void init_time(void) {
+void init_module_time(void) {
     PRINTL("[%s] ... ", __func__);
     cur_time = 0;
 

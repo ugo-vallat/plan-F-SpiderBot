@@ -9,7 +9,7 @@ typedef unsigned long time_t;
  * @brief Init time module
  * 
  */
-void init_time(void);
+void init_module_time(void);
 
 /**
  * @brief Get the time in us

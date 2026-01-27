@@ -13,7 +13,7 @@
 /**
  * @brief Initializes the logger by setting its output to a given path
  */
-void init_log(void);
+void init_module_log(void);
 
 /**
  * @brief Writes to the logger output

@@ -1,7 +1,7 @@
 #include <bluetooth.h>
 
 
-void init_bluetooth(void) {
+void init_module_bluetooth(void) {
 
     return;
 }

@@ -2,7 +2,7 @@
 #define __BLUETOOTH_H__
 
 
-void init_bluetooth(void);
+void init_module_bluetooth(void);
 
 
 #endif // __BLUETOOTH_H__

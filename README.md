@@ -74,10 +74,10 @@ Spider robot on stm32
 - D8  :
 - D9  :
 - D10 :
-- D11 :
-- D12 :
-- D13 :
-- D14 :
+- D11 : Board Green led
+- D12 : Board Orange led
+- D13 : Board Red led
+- D14 : Board Blue led
 - D15 :
 - E0  :
 - E1  :
