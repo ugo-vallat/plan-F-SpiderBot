@@ -8,8 +8,7 @@
 #include <time.h>
 #include <led.h>
 
-#define SM_TIMER_1  TIM3
-#define SM_TIMER_2  TIM4
+
 
 #define SM_PSC      26
 #define SM_ARR      (APB1_CLK / (SM_PSC * 50))
@@ -38,28 +37,18 @@ typedef struct {
     volatile uint32_t *ccr;
 } sm_config_t;
 
-typedef enum {
-    SM_FRS=0, // Front Right Shoulder
-    SM_RRS=1, // Rear Right Shoulder
-    SM_RLS=2, // Rear Lelft Shoulder
-    SM_FLS=3, // Front Lelft Shoulder
-    SM_FRE=4, // Front Right Elbow
-    SM_RRE=5, // Rear Right Elbow
-    SM_RLE=6, // Rear Lelft Elbow
-    SM_FLE=7, // Front Lelft Elbow
-} sm_id;
-
 
 const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
-    [SM_FRS] = {0, GPIOB, 0x2, &(SM_TIMER_1->CCR3)},  // TIM3_CH3
-    [SM_RRS] = {1, GPIOB, 0x2, &(SM_TIMER_1->CCR4)},  // TIM3_CH4
-    [SM_RLS] = {4, GPIOB, 0x2, &(SM_TIMER_1->CCR1)},  // TIM3_CH1
-    [SM_FLS] = {5, GPIOB, 0x2, &(SM_TIMER_1->CCR2)},  // TIM3_CH2
-    [SM_FRE] = {6, GPIOB, 0x2, &(SM_TIMER_2->CCR1)},  // TIM4_CH1
-    [SM_RRE] = {7, GPIOB, 0x2, &(SM_TIMER_2->CCR2)},  // TIM4_CH2
-    [SM_RLE] = {8, GPIOB, 0x2, &(SM_TIMER_2->CCR3)},  // TIM4_CH3
-    [SM_FLE] = {9, GPIOB, 0x2, &(SM_TIMER_2->CCR4)}   // TIM4_CH4
+    [SM_FRS] = {SM_FRS_PIN, SM_FRS_GPIO, SM_FRS_AF, SM_FRS_CCR},  // TIM3_CH3
+    [SM_RRS] = {SM_RRS_PIN, SM_RRS_GPIO, SM_RRS_AF, SM_RRS_CCR},  // TIM3_CH4
+    [SM_RLS] = {SM_RLS_PIN, SM_RLS_GPIO, SM_RLS_AF, SM_RLS_CCR},  // TIM3_CH1
+    [SM_FLS] = {SM_FLS_PIN, SM_FLS_GPIO, SM_FLS_AF, SM_FLS_CCR},  // TIM3_CH2
+    [SM_FRE] = {SM_FRE_PIN, SM_FRE_GPIO, SM_FRE_AF, SM_FRE_CCR},  // TIM4_CH1
+    [SM_RRE] = {SM_RRE_PIN, SM_RRE_GPIO, SM_RRE_AF, SM_RRE_CCR},  // TIM4_CH2
+    [SM_RLE] = {SM_RLE_PIN, SM_RLE_GPIO, SM_RLE_AF, SM_RLE_CCR},  // TIM4_CH3
+    [SM_FLE] = {SM_FLE_PIN, SM_FLE_GPIO, SM_FLE_AF, SM_FLE_CCR}   // TIM4_CH4
 };
+
 
 sm_state_t g_state = {
     SM_STOP,
@@ -103,14 +92,18 @@ void init_sm_tim(volatile timx_t *tim) {
 
 void init_sm_gpio(volatile gpio_t * gpio, int pin, int af) {
     gpio->MODER = REP_BITS(gpio->MODER, 2*pin, 2, GPIO_MODER_ALT);  // Mode alternate function
-    gpio->AFRL = REP_BITS(gpio->AFRL, (pin)*4, 4, af);           // Alternant function
+    if(pin < 8) {
+        gpio->AFRL = REP_BITS(gpio->AFRL, (pin)*4, 4, af);           // Alternant function
+    } else {
+        gpio->AFRH = REP_BITS(gpio->AFRH, (pin-8)*4, 4, af);
+    }
     gpio->OTYPER = REP_BITS(gpio->OTYPER, pin, 1, 0);   
 }
 
 void init_module_servomotor(void) {
     PRINTL("[%s] ... ", __func__);
     RCC->APB1ENR |= RCC_TIM3EN | RCC_TIM4EN;    // TODO : Pas modulaire
-    RCC->AHB1ENR |= RCC_GPIOBEN;                // TODO : Pas modulaire
+    RCC->AHB1ENR |= RCC_GPIOBEN | RCC_GPIODEN;  // TODO : Pas modulaire
 
     /* config timers */
     init_sm_tim(SM_TIMER_1);
@@ -264,7 +257,6 @@ void sm_move(time_t t) {
             sm_set_motor(SM_FLS, g_state.angles[SM_FLS]);
             sm_set_motor(SM_FRE, SM_MAX_ANGLE - 1 - g_state.angles[SM_FRE]);
             sm_set_motor(SM_RRE, SM_MAX_ANGLE - 1 - g_state.angles[SM_RRE]);
-            // PRINTL("Set SM_RLE : %u\n", SM_MAX_ANGLE - 1 - g_state.angles[SM_RLE]);
             sm_set_motor(SM_RLE, SM_MAX_ANGLE - 1 - g_state.angles[SM_RLE]);
             sm_set_motor(SM_FLE, SM_MAX_ANGLE - 1 - g_state.angles[SM_FLE]);
 
