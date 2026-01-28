@@ -17,8 +17,8 @@
 
 
 #define LED_G_PIN   12
-#define LED_O_PIN   13
-#define LED_R_PIN   14
+#define LED_R_PIN   13
+#define LED_O_PIN   14
 #define LED_B_PIN   15
 
 #define SWITCH_G_LED() SWITCH_LED(GPIOD, LED_G_PIN)

@@ -9,8 +9,11 @@
 #define SM_UPDATE_PERIOD    50000  // Time in us between each update of position
 #define SM_MOVE_DIVIDER     50      // Splitting a 90° angle
 
-#define SM_TIMER_1  TIM3
-#define SM_TIMER_2  TIM4
+#define SM_TIMER_1  TIM3    // Used for shoulders
+#define SM_TIMER_2  TIM4    // Used for elbows
+
+#define SM_TIMER_1_CLK  APB1_CLK
+#define SM_TIMER_2_CLK  APB1_CLK
 
 #define SM_FRS_GPIO GPIOB
 #define SM_RRS_GPIO GPIOB
@@ -39,6 +42,7 @@
 #define SM_RLE_AF   0x2
 #define SM_FLE_AF   0x2
 
+// Example : &(SM_TIMER_1->CCR3)
 #define SM_FRS_CCR  &(SM_TIMER_1->CCR3)
 #define SM_RRS_CCR  &(SM_TIMER_1->CCR4)
 #define SM_RLS_CCR  &(SM_TIMER_1->CCR1)
@@ -64,7 +68,7 @@ typedef enum {
     SM_FORWARD      = 1,
     SM_REVERSE      = 2,
     SM_ROTATE_LEFT  = 3,
-    SM_ROTATE_RIGH  = 4
+    SM_ROTATE_RIGHT  = 4
 } sm_move_t;
 
 /**

@@ -32,6 +32,14 @@ void main_loop(void) {
         SWITCH_B_LED();
         sm_set_next_move(SM_FORWARD);
         sm_move(10000000);
+        // sm_set_next_move(SM_REVERSE);
+        // sm_move(10000000);
+        // sm_set_next_move(SM_ROTATE_LEFT);
+        // sm_move(10000000);
+        // sm_set_next_move(SM_ROTATE_RIGHT);
+        // sm_move(10000000);
+        // sm_set_next_move(SM_STOP);
+        // sm_move(5000000);
     }
 }
 

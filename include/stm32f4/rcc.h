@@ -17,6 +17,9 @@
 
 #include "io.h"
 #include <stdint.h>
+#include "gpio.h"
+#include "tim.h"
+#include "adc.h"
 
 typedef struct {
     volatile uint32_t CR;           // 0x00
@@ -123,5 +126,13 @@ typedef struct {
 #define RCC_GPIOGEN		(1 << 6)
 #define RCC_GPIOHEN		(1 << 7)
 #define RCC_GPIOIEN		(1 << 8)
+
+
+void enable_gpio(volatile gpio_t * gpio);
+
+void enable_timx(volatile timx_t * tim);
+
+void enable_adcx(volatile adcx_t * adc);
+
 
 #endif	// STM32F4_RCC_H

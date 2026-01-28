@@ -26,7 +26,7 @@ void init_module_time(void) {
     PRINTL("[%s] ... ", __func__);
     cur_time = 0;
 
-    RCC->APB1ENR |= RCC_TIM6EN;
+    enable_timx(TIME_TIM);
 
     DISABLE_IRQS;
 

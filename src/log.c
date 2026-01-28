@@ -17,6 +17,8 @@
 
 
 void init_module_log(void) {
+    PRINTL("[%s] ... ", __func__);
+    PRINTL("OK\n");
 }
 
 void printl(const char *format, ...) {

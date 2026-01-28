@@ -2,24 +2,32 @@
 #include "log.h"
 #include "stm32f4/gpio.h"
 #include "stm32f4/io.h"
+#include "stm32f4/rcc.h"
 #include <stm32f4/tim.h>
 #include <servomotor.h>
 #include <log.h>
 #include <time.h>
 #include <led.h>
 
+#define SM_TIMER_1_PSC  (SM_TIMER_1_CLK / (65536 * 20))
+#define SM_TIMER_2_PSC  (SM_TIMER_2_CLK / (65536 * 20))
+
+#define SM_TIMER_1_ARR (SM_TIMER_1_CLK / (SM_TIMER_1_PSC * 50))
+#define SM_TIMER_2_ARR (SM_TIMER_2_CLK / (SM_TIMER_2_PSC * 50))
 
 
-#define SM_PSC      26
-#define SM_ARR      (APB1_CLK / (SM_PSC * 50))
+#define SM_TIMER_1_DUTY_MIN    (SM_TIMER_1_CLK / (SM_TIMER_1_PSC * 1000))   // 1ms
+#define SM_TIMER_1_DUTY_RANGE  (SM_TIMER_1_CLK / (SM_TIMER_1_PSC * 1000))   // 1ms
 
-#define NB_SERVOMOTOR       8
+#define SM_TIMER_2_DUTY_MIN    (SM_TIMER_2_CLK / (SM_TIMER_2_PSC * 1000))   // 1ms
+#define SM_TIMER_2_DUTY_RANGE  (SM_TIMER_2_CLK / (SM_TIMER_2_PSC * 1000))   // 1ms
 
-#define SM_DUTY_MIN    (APB1_CLK / (SM_PSC * 1000))   // 1ms
-#define SM_DUTY_RANGE  (APB1_CLK / (SM_PSC * 1000))   // 1ms
 #define SM_MAX_ANGLE    SM_MOVE_DIVIDER
 
-#define CONVERT_ANGLE(angle) (SM_DUTY_MIN + ((SM_DUTY_RANGE* angle / SM_MAX_ANGLE))) 
+#define CONVERT_ANGLE_TIMER_1(angle) (SM_TIMER_1_DUTY_MIN + ((SM_TIMER_1_DUTY_RANGE* angle / SM_MAX_ANGLE))) 
+#define CONVERT_ANGLE_TIMER_2(angle) (SM_TIMER_2_DUTY_MIN + ((SM_TIMER_2_DUTY_RANGE* angle / SM_MAX_ANGLE))) 
+
+#define NB_SERVOMOTOR       8
 
 typedef struct {
     sm_move_t move;
@@ -63,13 +71,13 @@ sm_state_t g_state = {
 void sm_set_motor(unsigned int m, unsigned int angle);
 
 
-void init_sm_tim(volatile timx_t *tim) {
+void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc) {
     DISABLE_IRQS;
 
     /* _____Config timer_____ */
 	tim->CR1 = 0;               // Disable timer
-	tim->PSC = SM_PSC - 1;         // setup prescalor
-	tim->ARR = SM_ARR;           // setup period
+	tim->PSC = psc - 1;         // setup prescalor
+	tim->ARR = arr;           // setup period
 	tim->EGR = TIM_UG;          // reset counter
 	tim->SR = 0;                // reset status
 
@@ -102,12 +110,22 @@ void init_sm_gpio(volatile gpio_t * gpio, int pin, int af) {
 
 void init_module_servomotor(void) {
     PRINTL("[%s] ... ", __func__);
-    RCC->APB1ENR |= RCC_TIM3EN | RCC_TIM4EN;    // TODO : Pas modulaire
-    RCC->AHB1ENR |= RCC_GPIOBEN | RCC_GPIODEN;  // TODO : Pas modulaire
+
+    /* enable modules */
+    enable_gpio(SM_FRS_GPIO);
+    enable_gpio(SM_RRS_GPIO);
+    enable_gpio(SM_RLS_GPIO);
+    enable_gpio(SM_FLS_GPIO);
+    enable_gpio(SM_FRE_GPIO);
+    enable_gpio(SM_RRE_GPIO);
+    enable_gpio(SM_RLE_GPIO);
+    enable_gpio(SM_FLE_GPIO);
+    enable_timx(SM_TIMER_1);
+    enable_timx(SM_TIMER_2);
 
     /* config timers */
-    init_sm_tim(SM_TIMER_1);
-    init_sm_tim(SM_TIMER_2);
+    init_sm_tim(SM_TIMER_1, SM_TIMER_1_ARR, SM_TIMER_1_PSC);
+    init_sm_tim(SM_TIMER_2, SM_TIMER_2_ARR, SM_TIMER_2_PSC);
     sm_set_motor((unsigned int)SM_FRS, g_state.angles[SM_FRS] + g_state.shift[SM_FRS]);
     sm_set_motor((unsigned int)SM_RRS, g_state.angles[SM_RRS] + g_state.shift[SM_RRS]);
     sm_set_motor((unsigned int)SM_RLS, g_state.angles[SM_RLS] + g_state.shift[SM_RLS]);
@@ -119,7 +137,7 @@ void init_module_servomotor(void) {
     SM_TIMER_1->CR1 |= TIM_CEN;
     SM_TIMER_2->CR1 |= TIM_CEN;
 
-
+    /* config gpio */
     for(int i = 0; i < NB_SERVOMOTOR; i++) {
         init_sm_gpio(SM_CONFIG[i].gpio, SM_CONFIG[i].pin, SM_CONFIG[i].af);
     }
@@ -135,27 +153,58 @@ void sm_set_motor(unsigned int m, unsigned int angle) {
     if(!ASSERTL(m < NB_SERVOMOTOR,"invalid motor (%u)", m)) {
         return;
     }
-    *(SM_CONFIG[m].ccr) = CONVERT_ANGLE(angle);
-    
+    switch (m) {
+    case SM_FRS:
+    case SM_RRS:
+    case SM_RLS:
+    case SM_FLS:
+        *(SM_CONFIG[m].ccr) = CONVERT_ANGLE_TIMER_1(angle);
+        break;
+    case SM_FRE:
+    case SM_RRE:
+    case SM_RLE:
+    case SM_FLE:
+        *(SM_CONFIG[m].ccr) = CONVERT_ANGLE_TIMER_2(angle);
+        break;
+    }
 }
 #define SHOULDER_MOVE_RIGHT(shoulder_id)    ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE)
 #define SHOULDER_MOVE_LEFT(shoulder_id)     (((SM_MAX_ANGLE<<1) - g_state.ref - g_state.shift[shoulder_id]) % SM_MAX_ANGLE)
 
 
 unsigned int sm_get_shoulder_pos(sm_id sm) {
-    switch (g_state.move) {
-        case SM_STOP:
-            return g_state.angles[sm];
-        case SM_FORWARD:
-        case SM_ROTATE_LEFT:
-            return SHOULDER_MOVE_RIGHT(sm);
-        case SM_REVERSE:
-        case SM_ROTATE_RIGH:
-            return SHOULDER_MOVE_LEFT(sm);
-        default:
-            WARNL("undefined move : %d", g_state.move);
-            return g_state.angles[sm];
+    if (SM_FRS == sm || SM_RRS == sm) {
+        switch (g_state.move) {
+            case SM_STOP:
+                return g_state.angles[sm];
+            case SM_FORWARD:
+            case SM_ROTATE_LEFT:
+                return SHOULDER_MOVE_RIGHT(sm);
+            case SM_REVERSE:
+            case SM_ROTATE_RIGHT:
+                return SHOULDER_MOVE_LEFT(sm);
+            default:
+                WARNL("undefined move : %d", g_state.move);
+                return g_state.angles[sm];
+        }
     }
+    if (SM_FLS == sm || SM_RLS == sm) {
+        switch (g_state.move) {
+            case SM_STOP:
+                return g_state.angles[sm];
+            case SM_FORWARD:
+            case SM_ROTATE_RIGHT:
+                return SHOULDER_MOVE_LEFT(sm);
+            case SM_REVERSE:
+            case SM_ROTATE_LEFT:
+                return SHOULDER_MOVE_RIGHT(sm);
+            default:
+                WARNL("undefined move : %d", g_state.move);
+                return g_state.angles[sm];
+        }
+    }
+    WARNL("Not a shoulder : %d", g_state.move);
+    return g_state.angles[sm];
 }
 
 
@@ -164,7 +213,7 @@ unsigned int sm_get_elbow(sm_id elbow_id, sm_id shoulder_id) {
         return SM_MAX_ANGLE / 2;
     }
 
-    if ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE == 2) {
+    if ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE == 5) {
         return 0;
     }
 
@@ -246,7 +295,6 @@ void sm_move(time_t t) {
     time_t next_update = start_time + period;
     
     while (get_time() < end_time) {
-
         if(get_time() > next_update) {
             SWITCH_G_LED();
             next_update = next_update + period;
@@ -258,7 +306,16 @@ void sm_move(time_t t) {
             sm_set_motor(SM_FRE, SM_MAX_ANGLE - 1 - g_state.angles[SM_FRE]);
             sm_set_motor(SM_RRE, SM_MAX_ANGLE - 1 - g_state.angles[SM_RRE]);
             sm_set_motor(SM_RLE, SM_MAX_ANGLE - 1 - g_state.angles[SM_RLE]);
-            sm_set_motor(SM_FLE, SM_MAX_ANGLE - 1 - g_state.angles[SM_FLE]);
+            sm_set_motor(SM_FLE, g_state.angles[SM_FLE]);
+
+            // sm_set_motor(SM_FRS, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_RRS, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_RLS, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_FLS, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_FRE, 0);
+            // sm_set_motor(SM_RRE, 0);
+            // sm_set_motor(SM_RLE, 0);
+            // sm_set_motor(SM_FLE, 0);
 
         }
     }
