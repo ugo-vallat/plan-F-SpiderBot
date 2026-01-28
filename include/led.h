@@ -15,6 +15,8 @@
         (gpio)->ODR ^= (1 << n);        \
     } while (0)                         \
 
+#define LED_ON(gpio, n) ((gpio)->BSRR = (1 << n))
+#define LED_OFF(gpio, n) ((gpio)->BSRR = (1 << (n + 16)))
 
 #define LED_G_PIN   12
 #define LED_R_PIN   13
