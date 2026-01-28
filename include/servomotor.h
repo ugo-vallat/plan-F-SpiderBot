@@ -68,7 +68,8 @@ typedef enum {
     SM_FORWARD      = 1,
     SM_REVERSE      = 2,
     SM_ROTATE_LEFT  = 3,
-    SM_ROTATE_RIGHT  = 4
+    SM_ROTATE_RIGHT = 4,
+    SM_MAX          = 5
 } sm_move_t;
 
 /**

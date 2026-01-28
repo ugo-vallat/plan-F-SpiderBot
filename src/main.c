@@ -30,8 +30,9 @@ void main_loop(void) {
     while(true) {
         PRINTL("main loop\n");
         SWITCH_B_LED();
-        sm_set_next_move(SM_FORWARD);
-        sm_move(10000000);
+        bluetooth_receive_cmd();
+        sm_set_next_move(bluetooth_get_last_cmd());
+        sm_move(1000000);
         // sm_set_next_move(SM_REVERSE);
         // sm_move(10000000);
         // sm_set_next_move(SM_ROTATE_LEFT);

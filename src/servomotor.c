@@ -209,6 +209,10 @@ unsigned int sm_get_shoulder_pos(sm_id sm) {
 
 
 unsigned int sm_get_elbow(sm_id elbow_id, sm_id shoulder_id) {
+    if (g_state.move == SM_STOP) {
+        return 0;
+    }
+    
     if ((g_state.ref + g_state.shift[shoulder_id]) == SM_MAX_ANGLE - 2) {
         return SM_MAX_ANGLE / 2;
     }
