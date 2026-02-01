@@ -1,3 +1,4 @@
+#include "defines.h"
 #include <stdint.h>
 #include <stm32f4/rcc.h>
 #include <stm32f4/gpio.h>
@@ -24,7 +25,7 @@
 #define USART_RE        (1 << 2)
 
 
-sm_move_t g_bluetooth_last_cmd_received = SM_STOP;
+cmd_t g_bluetooth_last_cmd_received = CMD_STOP;
 
 void init_module_bluetooth(void) {
     // Activer les horloges (GPIOA, GPIOD, USART1)
@@ -64,7 +65,7 @@ void bluetooth_receive_cmd(void) {
     // reception bluetooth
     if (USART1_SR & USART_RXNE) {
         last_data = USART1_DR; // lire le caractere recu 
-        if (last_data < SM_MAX) {
+        if (last_data < CMD_MAX) {
             PRINTL("New cmd : %u\n", last_data);
             g_bluetooth_last_cmd_received = last_data;
         } else {
@@ -77,6 +78,6 @@ void bluetooth_receive_cmd(void) {
 
 
 
-sm_move_t bluetooth_get_last_cmd(void) {
+cmd_t bluetooth_get_last_cmd(void) {
     return g_bluetooth_last_cmd_received;
 }

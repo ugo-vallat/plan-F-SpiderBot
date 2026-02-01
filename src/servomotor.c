@@ -183,6 +183,17 @@ unsigned int sm_get_shoulder_pos(sm_id sm) {
             case SM_REVERSE:
             case SM_ROTATE_RIGHT:
                 return SHOULDER_MOVE_LEFT(sm);
+            case SM_INIT:
+                if(g_state.ref == 0) {
+                    if(0 == g_state.angles[sm]) {
+                        return SM_MAX_ANGLE / 2;
+                    }
+                    if(SM_MAX_ANGLE / 2 == g_state.angles[sm]) {
+                        return SM_MAX_ANGLE - 1;
+                    }
+                    return 0;
+                }
+                return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
                 return g_state.angles[sm];
@@ -198,6 +209,17 @@ unsigned int sm_get_shoulder_pos(sm_id sm) {
             case SM_REVERSE:
             case SM_ROTATE_LEFT:
                 return SHOULDER_MOVE_RIGHT(sm);
+            case SM_INIT:
+                if(g_state.ref == 0) {
+                    if(0 == g_state.angles[sm]) {
+                        return SM_MAX_ANGLE / 2;
+                    }
+                    if(SM_MAX_ANGLE / 2 == g_state.angles[sm]) {
+                        return SM_MAX_ANGLE - 1;
+                    }
+                    return 0;
+                }
+                return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
                 return g_state.angles[sm];
@@ -209,18 +231,35 @@ unsigned int sm_get_shoulder_pos(sm_id sm) {
 
 
 unsigned int sm_get_elbow(sm_id elbow_id, sm_id shoulder_id) {
-    if (g_state.move == SM_STOP) {
-        return 0;
-    }
-    
-    if ((g_state.ref + g_state.shift[shoulder_id]) == SM_MAX_ANGLE - 2) {
-        return SM_MAX_ANGLE / 2;
-    }
+    switch(g_state.move) {
+        case SM_STOP:
+            return 0;
+        case SM_FORWARD:
+        case SM_REVERSE:
+        case SM_ROTATE_LEFT:
+        case SM_ROTATE_RIGHT:
+            if ((g_state.ref + g_state.shift[shoulder_id]) == SM_MAX_ANGLE - 2) {
+                return SM_MAX_ANGLE / 2;
+            }
 
-    if ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE == 5) {
-        return 0;
+            if ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE == 5) {
+                return 0;
+            }
+            return g_state.angles[elbow_id];
+        case SM_INIT:
+            if(g_state.ref == 0) {
+                if(0 == g_state.angles[elbow_id]) {
+                    return SM_MAX_ANGLE / 2;
+                }
+                if(SM_MAX_ANGLE / 2 == g_state.angles[elbow_id]) {
+                    return SM_MAX_ANGLE - 1;
+                }
+                return 0;
+            }
+            return g_state.angles[elbow_id];
+        default:
+            WARNL("Undefined move %d", g_state.move);
     }
-
     return g_state.angles[elbow_id];
 }
 
@@ -307,9 +346,9 @@ void sm_move(time_t t) {
             sm_set_motor(SM_RRS, g_state.angles[SM_RRS]);
             sm_set_motor(SM_RLS, g_state.angles[SM_RLS]);
             sm_set_motor(SM_FLS, g_state.angles[SM_FLS]);
-            sm_set_motor(SM_FRE, SM_MAX_ANGLE - 1 - g_state.angles[SM_FRE]);
-            sm_set_motor(SM_RRE, SM_MAX_ANGLE - 1 - g_state.angles[SM_RRE]);
-            sm_set_motor(SM_RLE, SM_MAX_ANGLE - 1 - g_state.angles[SM_RLE]);
+            sm_set_motor(SM_FRE, g_state.angles[SM_FRE]);
+            sm_set_motor(SM_RRE, g_state.angles[SM_RRE]);
+            sm_set_motor(SM_RLE, g_state.angles[SM_RLE]);
             sm_set_motor(SM_FLE, g_state.angles[SM_FLE]);
 
             // sm_set_motor(SM_FRS, SM_MAX_ANGLE - 1);

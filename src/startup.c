@@ -217,6 +217,7 @@ void ITM_putc(uint8_t ch) {
  * Interface with tinyprintf.
  */
 void tiny_putc(void *_, char c) {
+    (void) _;
 	ITM_putc(c);
 }
 

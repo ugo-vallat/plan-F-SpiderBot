@@ -14,4 +14,16 @@ typedef unsigned char bool;
 #define null ((void*) 0)
 
 
+/* _____ COMMANDS _____ */
+typedef enum {
+    CMD_STOP         = 0,
+    CMD_FORWARD      = 1,
+    CMD_REVERSE      = 2,
+    CMD_ROTATE_LEFT  = 3,
+    CMD_ROTATE_RIGHT = 4,
+    CMD_INIT         = 5,
+    CMD_MAX          = 6
+} cmd_t;
+
+
 #endif // __DEFINES_H__

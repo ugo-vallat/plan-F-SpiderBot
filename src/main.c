@@ -13,6 +13,7 @@
 #include <bluetooth.h>
 #include <led.h>
 #include <servomotor.h>
+#include <control.h>
 
 /**
  * @brief Call init function of each module
@@ -24,6 +25,7 @@ void init(void) {
     init_module_led();
     init_module_bluetooth();
     init_module_servomotor();
+    init_module_control();
 }
 
 void main_loop(void) {
@@ -31,16 +33,8 @@ void main_loop(void) {
         PRINTL("main loop\n");
         SWITCH_B_LED();
         bluetooth_receive_cmd();
-        sm_set_next_move(bluetooth_get_last_cmd());
+        ctrl_update_robot();
         sm_move(1000000);
-        // sm_set_next_move(SM_REVERSE);
-        // sm_move(10000000);
-        // sm_set_next_move(SM_ROTATE_LEFT);
-        // sm_move(10000000);
-        // sm_set_next_move(SM_ROTATE_RIGHT);
-        // sm_move(10000000);
-        // sm_set_next_move(SM_STOP);
-        // sm_move(5000000);
     }
 }
 

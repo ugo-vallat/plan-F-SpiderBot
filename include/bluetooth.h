@@ -7,7 +7,7 @@ void init_module_bluetooth(void);
 
 void bluetooth_receive_cmd(void);
 
-sm_move_t bluetooth_get_last_cmd(void);
+cmd_t bluetooth_get_last_cmd(void);
 
 
 #endif // __BLUETOOTH_H__
