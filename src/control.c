@@ -29,8 +29,11 @@ void ctrl_control_legs(cmd_t cmd) {
         case CMD_ROTATE_RIGHT:
             g_next_move = SM_ROTATE_RIGHT;
             break;
-        case CMD_INIT:
-            g_next_move = SM_INIT;
+        case CMD_INIT_SHOULDER:
+            g_next_move = SM_INIT_SHOULDER;
+            break;
+        case CMD_INIT_ELBOW:
+            g_next_move = SM_INIT_ELBOW;
             break;
         default:
             WARNL("undefined command : %d", cmd);
