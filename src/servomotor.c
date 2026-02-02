@@ -47,14 +47,14 @@ typedef struct {
 
 
 const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
-    [SM_FRS] = {SM_FRS_PIN, SM_FRS_GPIO, SM_FRS_AF, SM_FRS_CCR},  // TIM3_CH3
-    [SM_RRS] = {SM_RRS_PIN, SM_RRS_GPIO, SM_RRS_AF, SM_RRS_CCR},  // TIM3_CH4
-    [SM_RLS] = {SM_RLS_PIN, SM_RLS_GPIO, SM_RLS_AF, SM_RLS_CCR},  // TIM3_CH1
-    [SM_FLS] = {SM_FLS_PIN, SM_FLS_GPIO, SM_FLS_AF, SM_FLS_CCR},  // TIM3_CH2
-    [SM_FRE] = {SM_FRE_PIN, SM_FRE_GPIO, SM_FRE_AF, SM_FRE_CCR},  // TIM4_CH1
-    [SM_RRE] = {SM_RRE_PIN, SM_RRE_GPIO, SM_RRE_AF, SM_RRE_CCR},  // TIM4_CH2
-    [SM_RLE] = {SM_RLE_PIN, SM_RLE_GPIO, SM_RLE_AF, SM_RLE_CCR},  // TIM4_CH3
-    [SM_FLE] = {SM_FLE_PIN, SM_FLE_GPIO, SM_FLE_AF, SM_FLE_CCR}   // TIM4_CH4
+    [SM_FRZ] = {SM_FRZ_PIN, SM_FRZ_GPIO, SM_FRZ_AF, SM_FRZ_CCR},  // TIM3_CH3
+    [SM_RRZ] = {SM_RRZ_PIN, SM_RRZ_GPIO, SM_RRZ_AF, SM_RRZ_CCR},  // TIM3_CH4
+    [SM_RLZ] = {SM_RLZ_PIN, SM_RLZ_GPIO, SM_RLZ_AF, SM_RLZ_CCR},  // TIM3_CH1
+    [SM_FLZ] = {SM_FLZ_PIN, SM_FLZ_GPIO, SM_FLZ_AF, SM_FLZ_CCR},  // TIM3_CH2
+    [SM_FRX] = {SM_FRX_PIN, SM_FRX_GPIO, SM_FRX_AF, SM_FRX_CCR},  // TIM4_CH1
+    [SM_RRX] = {SM_RRX_PIN, SM_RRX_GPIO, SM_RRX_AF, SM_RRX_CCR},  // TIM4_CH2
+    [SM_RLX] = {SM_RLX_PIN, SM_RLX_GPIO, SM_RLX_AF, SM_RLX_CCR},  // TIM4_CH3
+    [SM_FLX] = {SM_FLX_PIN, SM_FLX_GPIO, SM_FLX_AF, SM_FLX_CCR}   // TIM4_CH4
 };
 
 
@@ -112,28 +112,28 @@ void init_module_servomotor(void) {
     PRINTL("[%s] ... ", __func__);
 
     /* enable modules */
-    enable_gpio(SM_FRS_GPIO);
-    enable_gpio(SM_RRS_GPIO);
-    enable_gpio(SM_RLS_GPIO);
-    enable_gpio(SM_FLS_GPIO);
-    enable_gpio(SM_FRE_GPIO);
-    enable_gpio(SM_RRE_GPIO);
-    enable_gpio(SM_RLE_GPIO);
-    enable_gpio(SM_FLE_GPIO);
+    enable_gpio(SM_FRZ_GPIO);
+    enable_gpio(SM_RRZ_GPIO);
+    enable_gpio(SM_RLZ_GPIO);
+    enable_gpio(SM_FLZ_GPIO);
+    enable_gpio(SM_FRX_GPIO);
+    enable_gpio(SM_RRX_GPIO);
+    enable_gpio(SM_RLX_GPIO);
+    enable_gpio(SM_FLX_GPIO);
     enable_timx(SM_TIMER_1);
     enable_timx(SM_TIMER_2);
 
     /* config timers */
     init_sm_tim(SM_TIMER_1, SM_TIMER_1_ARR, SM_TIMER_1_PSC);
     init_sm_tim(SM_TIMER_2, SM_TIMER_2_ARR, SM_TIMER_2_PSC);
-    sm_set_motor((unsigned int)SM_FRS, g_state.angles[SM_FRS] + g_state.shift[SM_FRS]);
-    sm_set_motor((unsigned int)SM_RRS, g_state.angles[SM_RRS] + g_state.shift[SM_RRS]);
-    sm_set_motor((unsigned int)SM_RLS, g_state.angles[SM_RLS] + g_state.shift[SM_RLS]);
-    sm_set_motor((unsigned int)SM_FLS, g_state.angles[SM_FLS] + g_state.shift[SM_FLS]);
-    sm_set_motor((unsigned int)SM_FRE, g_state.angles[SM_FRE]);
-    sm_set_motor((unsigned int)SM_RRE, g_state.angles[SM_RRE]);
-    sm_set_motor((unsigned int)SM_RLE, g_state.angles[SM_RLE]);
-    sm_set_motor((unsigned int)SM_FLE, g_state.angles[SM_FLE]);
+    sm_set_motor((unsigned int)SM_FRZ, g_state.angles[SM_FRZ] + g_state.shift[SM_FRZ]);
+    sm_set_motor((unsigned int)SM_RRZ, g_state.angles[SM_RRZ] + g_state.shift[SM_RRZ]);
+    sm_set_motor((unsigned int)SM_RLZ, g_state.angles[SM_RLZ] + g_state.shift[SM_RLZ]);
+    sm_set_motor((unsigned int)SM_FLZ, g_state.angles[SM_FLZ] + g_state.shift[SM_FLZ]);
+    sm_set_motor((unsigned int)SM_FRX, g_state.angles[SM_FRX]);
+    sm_set_motor((unsigned int)SM_RRX, g_state.angles[SM_RRX]);
+    sm_set_motor((unsigned int)SM_RLX, g_state.angles[SM_RLX]);
+    sm_set_motor((unsigned int)SM_FLX, g_state.angles[SM_FLX]);
     SM_TIMER_1->CR1 |= TIM_CEN;
     SM_TIMER_2->CR1 |= TIM_CEN;
 
@@ -144,8 +144,6 @@ void init_module_servomotor(void) {
     PRINTL("OK\n");
 }
 
-
-
 void sm_set_motor(unsigned int m, unsigned int angle) {
     if(!ASSERTL(angle < SM_MAX_ANGLE,"invalid angle : motor %d (%u)", m,  angle)) {
         return;
@@ -154,40 +152,40 @@ void sm_set_motor(unsigned int m, unsigned int angle) {
         return;
     }
     switch (m) {
-    case SM_FRS:
-    case SM_RRS:
-    case SM_RLS:
-    case SM_FLS:
+    case SM_FRZ:
+    case SM_RRZ:
+    case SM_RLZ:
+    case SM_FLZ:
         *(SM_CONFIG[m].ccr) = CONVERT_ANGLE_TIMER_1(angle);
         break;
-    case SM_FRE:
-    case SM_RRE:
-    case SM_RLE:
-    case SM_FLE:
+    case SM_FRX:
+    case SM_RRX:
+    case SM_RLX:
+    case SM_FLX:
         *(SM_CONFIG[m].ccr) = CONVERT_ANGLE_TIMER_2(angle);
         break;
     }
 }
 
-/* Move shoulder from SM_MAX_ANGLE to 0 */
-#define SHOULDER_MOVE_RIGHT(shoulder_id)    ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE)
+/* Move Z axis from SM_MAX_ANGLE to 0 */
+#define Z_AXIS_MOVE_RIGHT(sm_id)    ((g_state.ref + g_state.shift[sm_id]) % SM_MAX_ANGLE)
 
-/* Move shoulder from 0 to SM_MAX_ANGLE */
-#define SHOULDER_MOVE_LEFT(shoulder_id)     (((SM_MAX_ANGLE<<1) - g_state.ref - g_state.shift[shoulder_id]) % SM_MAX_ANGLE)
+/* Move Z axis from 0 to SM_MAX_ANGLE */
+#define Z_AXIS_MOVE_LEFT(sm_id)     (((SM_MAX_ANGLE<<1) - g_state.ref - g_state.shift[sm_id]) % SM_MAX_ANGLE)
 
 
-unsigned int sm_get_shoulder_pos(sm_id sm) {
-    if (SM_FRS == sm || SM_RRS == sm) {
+unsigned int sm_get_z_axis_pos(sm_id sm) {
+    if (SM_FRZ == sm || SM_RRZ == sm) {
         switch (g_state.move) {
             case SM_STOP:
                 return g_state.angles[sm];
             case SM_FORWARD:
             case SM_ROTATE_LEFT:
-                return SHOULDER_MOVE_RIGHT(sm);
+                return Z_AXIS_MOVE_RIGHT(sm);
             case SM_REVERSE:
             case SM_ROTATE_RIGHT:
-                return SHOULDER_MOVE_LEFT(sm);
-            case SM_INIT_SHOULDER:
+                return Z_AXIS_MOVE_LEFT(sm);
+            case SM_INIT_Z_AXIS:
                 if(g_state.ref == 0) {
                     return 0;
                 }
@@ -198,24 +196,24 @@ unsigned int sm_get_shoulder_pos(sm_id sm) {
                     return SM_MAX_ANGLE - 1;
                 }
                 return g_state.angles[sm];
-            case SM_INIT_ELBOW:
+            case SM_INIT_X_AXIS:
                 return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
                 return g_state.angles[sm];
         }
     }
-    if (SM_FLS == sm || SM_RLS == sm) {
+    if (SM_FLZ == sm || SM_RLZ == sm) {
         switch (g_state.move) {
             case SM_STOP:
                 return g_state.angles[sm];
             case SM_FORWARD:
             case SM_ROTATE_RIGHT:
-                return SHOULDER_MOVE_LEFT(sm);
+                return Z_AXIS_MOVE_LEFT(sm);
             case SM_REVERSE:
             case SM_ROTATE_LEFT:
-                return SHOULDER_MOVE_RIGHT(sm);
-            case SM_INIT_SHOULDER:
+                return Z_AXIS_MOVE_RIGHT(sm);
+            case SM_INIT_Z_AXIS:
                 if(g_state.ref == 0) {
                     return 0;
                 }
@@ -226,19 +224,19 @@ unsigned int sm_get_shoulder_pos(sm_id sm) {
                     return SM_MAX_ANGLE - 1;
                 }
                 return g_state.angles[sm];
-            case SM_INIT_ELBOW:
+            case SM_INIT_X_AXIS:
                 return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
                 return g_state.angles[sm];
         }
     }
-    WARNL("Not a shoulder : %d", g_state.move);
+    WARNL("Not a Z axis servomotor : %d", g_state.move);
     return g_state.angles[sm];
 }
 
 
-unsigned int sm_get_elbow(sm_id elbow_id, sm_id shoulder_id) {
+unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
     switch(g_state.move) {
         case SM_STOP:
             return 0;
@@ -246,15 +244,15 @@ unsigned int sm_get_elbow(sm_id elbow_id, sm_id shoulder_id) {
         case SM_REVERSE:
         case SM_ROTATE_LEFT:
         case SM_ROTATE_RIGHT:
-            if ((g_state.ref + g_state.shift[shoulder_id]) == SM_MAX_ANGLE - 2) {
+            if ((g_state.ref + g_state.shift[smz_id]) == SM_MAX_ANGLE - 2) {
                 return SM_MAX_ANGLE / 2;
             }
 
-            if ((g_state.ref + g_state.shift[shoulder_id]) % SM_MAX_ANGLE == 5) {
+            if ((g_state.ref + g_state.shift[smz_id]) % SM_MAX_ANGLE == 5) {
                 return 0;
             }
-            return g_state.angles[elbow_id];
-        case SM_INIT_ELBOW:
+            return g_state.angles[smx_id];
+        case SM_INIT_X_AXIS:
             if(g_state.ref == 0) {
                 return 0;
             }
@@ -264,13 +262,13 @@ unsigned int sm_get_elbow(sm_id elbow_id, sm_id shoulder_id) {
             if(g_state.ref == SM_MAX_ANGLE*2/3) {
                 return SM_MAX_ANGLE - 1;
             }
-            return g_state.angles[elbow_id];
-        case SM_INIT_SHOULDER:
-            return g_state.angles[elbow_id];
+            return g_state.angles[smx_id];
+        case SM_INIT_Z_AXIS:
+            return g_state.angles[smx_id];
         default:
             WARNL("Undefined move %d", g_state.move);
     }
-    return g_state.angles[elbow_id];
+    return g_state.angles[smx_id];
 }
 
 
@@ -279,36 +277,36 @@ void sm_switch_move(void) {
         g_state.swhitch_ref--;
         return;
     }
-    g_state.angles[SM_FRE] = 0;
-    g_state.angles[SM_RRE] = 0;
-    g_state.angles[SM_RLE] = 0;
-    g_state.angles[SM_FLE] = 0;
+    g_state.angles[SM_FRX] = 0;
+    g_state.angles[SM_RRX] = 0;
+    g_state.angles[SM_RLX] = 0;
+    g_state.angles[SM_FLX] = 0;
 
-    if (sm_get_shoulder_pos(SM_FRS) != g_state.angles[SM_FRS]) {
+    if (sm_get_z_axis_pos(SM_FRZ) != g_state.angles[SM_FRZ]) {
         PRINTL("[SWITCH] Set Front Right Leg\n");
-        g_state.angles[SM_FRE] = SM_MAX_ANGLE / 2;
-        g_state.angles[SM_FRS] = sm_get_shoulder_pos(SM_FRS);
+        g_state.angles[SM_FRX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_FRZ] = sm_get_z_axis_pos(SM_FRZ);
         g_state.swhitch_ref = 10;
         return;
     }
-    if (sm_get_shoulder_pos(SM_RRS) != g_state.angles[SM_RRS]) {
+    if (sm_get_z_axis_pos(SM_RRZ) != g_state.angles[SM_RRZ]) {
         PRINTL("[SWITCH] Set Rear Right Leg\n");
-        g_state.angles[SM_RRE] = SM_MAX_ANGLE / 2;
-        g_state.angles[SM_RRS] = sm_get_shoulder_pos(SM_RRS);
+        g_state.angles[SM_RRX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_RRZ] = sm_get_z_axis_pos(SM_RRZ);
         g_state.swhitch_ref = 10;
         return;
     }
-    if (sm_get_shoulder_pos(SM_RLS) != g_state.angles[SM_RLS]) {
+    if (sm_get_z_axis_pos(SM_RLZ) != g_state.angles[SM_RLZ]) {
         PRINTL("[SWITCH] Set Rear Left Leg\n");
-        g_state.angles[SM_RLE] = SM_MAX_ANGLE / 2;
-        g_state.angles[SM_RLS] = sm_get_shoulder_pos(SM_RLS);
+        g_state.angles[SM_RLX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_RLZ] = sm_get_z_axis_pos(SM_RLZ);
         g_state.swhitch_ref = 10;
         return;
     }
-    if (sm_get_shoulder_pos(SM_FLS) != g_state.angles[SM_FLS]) {
+    if (sm_get_z_axis_pos(SM_FLZ) != g_state.angles[SM_FLZ]) {
         PRINTL("[SWITCH] Set Front Left Leg\n");
-        g_state.angles[SM_FLE] = SM_MAX_ANGLE / 2;
-        g_state.angles[SM_FLS] = sm_get_shoulder_pos(SM_FLS);
+        g_state.angles[SM_FLX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_FLZ] = sm_get_z_axis_pos(SM_FLZ);
         g_state.swhitch_ref = 10;
         return;
     }
@@ -324,14 +322,14 @@ void sm_next_state(void) {
         return;
     }
     g_state.ref = (g_state.ref + 1) % SM_MAX_ANGLE;
-    g_state.angles[SM_FRS] = sm_get_shoulder_pos(SM_FRS);
-    g_state.angles[SM_RRS] = sm_get_shoulder_pos(SM_RRS);
-    g_state.angles[SM_RLS] = sm_get_shoulder_pos(SM_RLS);
-    g_state.angles[SM_FLS] = sm_get_shoulder_pos(SM_FLS);
-    g_state.angles[SM_FRE] = sm_get_elbow(SM_FRE, SM_FRS);
-    g_state.angles[SM_RRE] = sm_get_elbow(SM_RRE, SM_RRS);
-    g_state.angles[SM_RLE] = sm_get_elbow(SM_RLE, SM_RLS);
-    g_state.angles[SM_FLE] = sm_get_elbow(SM_FLE, SM_FLS);
+    g_state.angles[SM_FRZ] = sm_get_z_axis_pos(SM_FRZ);
+    g_state.angles[SM_RRZ] = sm_get_z_axis_pos(SM_RRZ);
+    g_state.angles[SM_RLZ] = sm_get_z_axis_pos(SM_RLZ);
+    g_state.angles[SM_FLZ] = sm_get_z_axis_pos(SM_FLZ);
+    g_state.angles[SM_FRX] = sm_get_x_axis_pos(SM_FRX, SM_FRZ);
+    g_state.angles[SM_RRX] = sm_get_x_axis_pos(SM_RRX, SM_RRZ);
+    g_state.angles[SM_RLX] = sm_get_x_axis_pos(SM_RLX, SM_RLZ);
+    g_state.angles[SM_FLX] = sm_get_x_axis_pos(SM_FLX, SM_FLZ);
 
 }
 
@@ -353,23 +351,23 @@ void sm_move(time_t t) {
             SWITCH_G_LED();
             next_update = next_update + period;
             sm_next_state();
-            sm_set_motor(SM_FRS, g_state.angles[SM_FRS]);
-            sm_set_motor(SM_RRS, g_state.angles[SM_RRS]);
-            sm_set_motor(SM_RLS, g_state.angles[SM_RLS]);
-            sm_set_motor(SM_FLS, g_state.angles[SM_FLS]);
-            sm_set_motor(SM_FRE, g_state.angles[SM_FRE]);
-            sm_set_motor(SM_RRE, g_state.angles[SM_RRE]);
-            sm_set_motor(SM_RLE, g_state.angles[SM_RLE]);
-            sm_set_motor(SM_FLE, g_state.angles[SM_FLE]);
+            sm_set_motor(SM_FRZ, g_state.angles[SM_FRZ]);
+            sm_set_motor(SM_RRZ, g_state.angles[SM_RRZ]);
+            sm_set_motor(SM_RLZ, g_state.angles[SM_RLZ]);
+            sm_set_motor(SM_FLZ, g_state.angles[SM_FLZ]);
+            sm_set_motor(SM_FRX, g_state.angles[SM_FRX]);
+            sm_set_motor(SM_RRX, g_state.angles[SM_RRX]);
+            sm_set_motor(SM_RLX, g_state.angles[SM_RLX]);
+            sm_set_motor(SM_FLX, g_state.angles[SM_FLX]);
 
-            // sm_set_motor(SM_FRS, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_RRS, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_RLS, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_FLS, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_FRE, 0);
-            // sm_set_motor(SM_RRE, 0);
-            // sm_set_motor(SM_RLE, 0);
-            // sm_set_motor(SM_FLE, 0);
+            // sm_set_motor(SM_FRZ, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_RRZ, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_RLZ, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_FLZ, SM_MAX_ANGLE - 1);
+            // sm_set_motor(SM_FRX, 0);
+            // sm_set_motor(SM_RRX, 0);
+            // sm_set_motor(SM_RLX, 0);
+            // sm_set_motor(SM_FLX, 0);
 
         }
     }

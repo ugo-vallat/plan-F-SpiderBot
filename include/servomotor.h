@@ -9,58 +9,58 @@
 #define SM_UPDATE_PERIOD    50000  // Time in us between each update of position
 #define SM_MOVE_DIVIDER     50      // Splitting a 90° angle
 
-#define SM_TIMER_1  TIM3    // Used for shoulders
-#define SM_TIMER_2  TIM4    // Used for elbows
+#define SM_TIMER_1  TIM3    // Used for z axis
+#define SM_TIMER_2  TIM4    // Used for x axis
 
 #define SM_TIMER_1_CLK  APB1_CLK
 #define SM_TIMER_2_CLK  APB1_CLK
 
-#define SM_FRS_GPIO GPIOB
-#define SM_RRS_GPIO GPIOB
-#define SM_RLS_GPIO GPIOB
-#define SM_FLS_GPIO GPIOB
-#define SM_FRE_GPIO GPIOB
-#define SM_RRE_GPIO GPIOB
-#define SM_RLE_GPIO GPIOB
-#define SM_FLE_GPIO GPIOB
+#define SM_FRZ_GPIO GPIOB
+#define SM_RRZ_GPIO GPIOB
+#define SM_RLZ_GPIO GPIOB
+#define SM_FLZ_GPIO GPIOB
+#define SM_FRX_GPIO GPIOB
+#define SM_RRX_GPIO GPIOB
+#define SM_RLX_GPIO GPIOB
+#define SM_FLX_GPIO GPIOB
 
-#define SM_FRS_PIN  0
-#define SM_RRS_PIN  1
-#define SM_RLS_PIN  4
-#define SM_FLS_PIN  5
-#define SM_FRE_PIN  6
-#define SM_RRE_PIN  7
-#define SM_RLE_PIN  8
-#define SM_FLE_PIN  9
+#define SM_FRZ_PIN  0
+#define SM_RRZ_PIN  1
+#define SM_RLZ_PIN  4
+#define SM_FLZ_PIN  5
+#define SM_FRX_PIN  6
+#define SM_RRX_PIN  7
+#define SM_RLX_PIN  8
+#define SM_FLX_PIN  9
 
-#define SM_FRS_AF   0x2
-#define SM_RRS_AF   0x2
-#define SM_RLS_AF   0x2
-#define SM_FLS_AF   0x2
-#define SM_FRE_AF   0x2
-#define SM_RRE_AF   0x2
-#define SM_RLE_AF   0x2
-#define SM_FLE_AF   0x2
+#define SM_FRZ_AF   0x2
+#define SM_RRZ_AF   0x2
+#define SM_RLZ_AF   0x2
+#define SM_FLZ_AF   0x2
+#define SM_FRX_AF   0x2
+#define SM_RRX_AF   0x2
+#define SM_RLX_AF   0x2
+#define SM_FLX_AF   0x2
 
 // Example : &(SM_TIMER_1->CCR3)
-#define SM_FRS_CCR  &(SM_TIMER_1->CCR3)
-#define SM_RRS_CCR  &(SM_TIMER_1->CCR4)
-#define SM_RLS_CCR  &(SM_TIMER_1->CCR1)
-#define SM_FLS_CCR  &(SM_TIMER_1->CCR2)
-#define SM_FRE_CCR  &(SM_TIMER_2->CCR1)
-#define SM_RRE_CCR  &(SM_TIMER_2->CCR2)
-#define SM_RLE_CCR  &(SM_TIMER_2->CCR3)
-#define SM_FLE_CCR  &(SM_TIMER_2->CCR4)
+#define SM_FRZ_CCR  &(SM_TIMER_1->CCR3)
+#define SM_RRZ_CCR  &(SM_TIMER_1->CCR4)
+#define SM_RLZ_CCR  &(SM_TIMER_1->CCR1)
+#define SM_FLZ_CCR  &(SM_TIMER_1->CCR2)
+#define SM_FRX_CCR  &(SM_TIMER_2->CCR1)
+#define SM_RRX_CCR  &(SM_TIMER_2->CCR2)
+#define SM_RLX_CCR  &(SM_TIMER_2->CCR3)
+#define SM_FLX_CCR  &(SM_TIMER_2->CCR4)
 
 typedef enum {
-    SM_FRS=0, // Front Right Shoulder
-    SM_RRS=1, // Rear Right Shoulder
-    SM_RLS=2, // Rear Lelft Shoulder
-    SM_FLS=3, // Front Lelft Shoulder
-    SM_FRE=4, // Front Right Elbow
-    SM_RRE=5, // Rear Right Elbow
-    SM_RLE=6, // Rear Lelft Elbow
-    SM_FLE=7, // Front Lelft Elbow
+    SM_FRZ=0, // Front Right Z axis
+    SM_RRZ=1, // Rear Right Z axis
+    SM_RLZ=2, // Rear Lelft Z axis
+    SM_FLZ=3, // Front Lelft Z axis
+    SM_FRX=4, // Front Right X axis
+    SM_RRX=5, // Rear Right X axis
+    SM_RLX=6, // Rear Lelft X axis
+    SM_FLX=7, // Front Lelft X axis
 } sm_id;
 
 typedef enum {
@@ -69,8 +69,8 @@ typedef enum {
     SM_REVERSE      = 2,
     SM_ROTATE_LEFT  = 3,
     SM_ROTATE_RIGHT = 4,
-    SM_INIT_SHOULDER= 5,
-    SM_INIT_ELBOW   = 6,
+    SM_INIT_Z_AXIS= 5,
+    SM_INIT_X_AXIS   = 6,
     SM_MAX          = 7
 } sm_move_t;
 

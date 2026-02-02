@@ -21,8 +21,8 @@ typedef enum {
     CMD_REVERSE         = 2,
     CMD_ROTATE_LEFT     = 3,
     CMD_ROTATE_RIGHT    = 4,
-    CMD_INIT_SHOULDER   = 5,
-    CMD_INIT_ELBOW      = 6,
+    CMD_INIT_Z_AXIS   = 5,
+    CMD_INIT_X_AXIS      = 6,
     CMD_MAX             = 7
 } cmd_t;
 
