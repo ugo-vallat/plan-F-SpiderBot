@@ -90,7 +90,7 @@ void sm_set_next_move(sm_move_t m);
 /**
  * @brief Move the robot during t us
  * 
- * @param t     Duration of movment in us
+ * @param t Duration of movement in us
  */
 void sm_move(time_t t);
 

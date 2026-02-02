@@ -29,6 +29,13 @@
 
 #define NB_SERVOMOTOR       8
 
+/* Move Z axis from SM_MAX_ANGLE to 0 */
+#define Z_AXIS_MOVE_RIGHT(sm_id)    ((g_state.ref + g_state.shift[sm_id]) % SM_MAX_ANGLE)
+
+/* Move Z axis from 0 to SM_MAX_ANGLE */
+#define Z_AXIS_MOVE_LEFT(sm_id)     (((SM_MAX_ANGLE<<1) - g_state.ref - g_state.shift[sm_id]) % SM_MAX_ANGLE)
+
+
 typedef struct {
     sm_move_t move;
     sm_move_t prev;
@@ -46,6 +53,10 @@ typedef struct {
 } sm_config_t;
 
 
+/**
+ * @brief Configuration of each servomotor
+ * 
+ */
 const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
     [SM_FRZ] = {SM_FRZ_PIN, SM_FRZ_GPIO, SM_FRZ_AF, SM_FRZ_CCR},  // TIM3_CH3
     [SM_RRZ] = {SM_RRZ_PIN, SM_RRZ_GPIO, SM_RRZ_AF, SM_RRZ_CCR},  // TIM3_CH4
@@ -58,19 +69,39 @@ const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
 };
 
 
+/**
+ * @brief Global state of servomotor module
+ * 
+ */
 sm_state_t g_state = {
-    SM_STOP,
-    SM_STOP,
-    0, 
-    0,
-    {0, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2, SM_MAX_ANGLE*3/4},
-    {0, 0, 0, 0, 0, 0, 0, 0}
+    SM_STOP,    // Current movement
+    SM_STOP,    // Previous movement
+    0,          // reference angle
+    0,  // reference angle during move switch
+    {0, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2, SM_MAX_ANGLE*3/4}, // shift of each servomotor with the reference angle
+    {0, 0, 0, 0, 0, 0, 0, 0}    // Current destination angle
 };
 
+void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc);
+void init_sm_gpio(volatile gpio_t * gpio, int pin, int af);
 
-void sm_set_motor(unsigned int m, unsigned int angle);
+void sm_set_motor(sm_id m, unsigned int angle);
+unsigned int sm_get_z_axis_pos(sm_id sm);
+unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id);
+void sm_switch_move(void);
+void sm_next_state(void);
 
 
+
+/**
+ * @brief Initialize timer
+ * 
+ * @param tim Timer to initialize
+ * @param arr ARR for timer
+ * @param psc PSC for timer
+ *
+ * @note Doesn't start the timer
+ */
 void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc) {
     DISABLE_IRQS;
 
@@ -98,6 +129,13 @@ void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc) {
     ENABLE_IRQS;
 }
 
+/**
+ * @brief Initilize GPIO
+ * 
+ * @param gpio GPIO to initialize
+ * @param pin Pin to initialize
+ * @param af Alternate function used
+ */
 void init_sm_gpio(volatile gpio_t * gpio, int pin, int af) {
     gpio->MODER = REP_BITS(gpio->MODER, 2*pin, 2, GPIO_MODER_ALT);  // Mode alternate function
     if(pin < 8) {
@@ -144,7 +182,13 @@ void init_module_servomotor(void) {
     PRINTL("OK\n");
 }
 
-void sm_set_motor(unsigned int m, unsigned int angle) {
+/**
+ * @brief Move the servomotor to the given angle
+ * 
+ * @param m ID of the servomotor
+ * @param angle Target angle
+ */
+void sm_set_motor(sm_id m, unsigned int angle) {
     if(!ASSERTL(angle < SM_MAX_ANGLE,"invalid angle : motor %d (%u)", m,  angle)) {
         return;
     }
@@ -167,13 +211,12 @@ void sm_set_motor(unsigned int m, unsigned int angle) {
     }
 }
 
-/* Move Z axis from SM_MAX_ANGLE to 0 */
-#define Z_AXIS_MOVE_RIGHT(sm_id)    ((g_state.ref + g_state.shift[sm_id]) % SM_MAX_ANGLE)
-
-/* Move Z axis from 0 to SM_MAX_ANGLE */
-#define Z_AXIS_MOVE_LEFT(sm_id)     (((SM_MAX_ANGLE<<1) - g_state.ref - g_state.shift[sm_id]) % SM_MAX_ANGLE)
-
-
+/**
+ * @brief Compute the angle at which the Z-axis servomotor should be
+ * 
+ * @param sm servomotor of the Z axis
+ * @return angle
+ */
 unsigned int sm_get_z_axis_pos(sm_id sm) {
     if (SM_FRZ == sm || SM_RRZ == sm) {
         switch (g_state.move) {
@@ -235,7 +278,13 @@ unsigned int sm_get_z_axis_pos(sm_id sm) {
     return g_state.angles[sm];
 }
 
-
+/**
+ * @brief Compute the angle at which the X-axis servomotor should be
+ * 
+ * @param smx_id Servomotor of the X axis
+ * @param smz_id Servomotor of the Z axis on the same leg as smx_id
+ * @return angle
+ */
 unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
     switch(g_state.move) {
         case SM_STOP:
@@ -271,7 +320,10 @@ unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
     return g_state.angles[smx_id];
 }
 
-
+/**
+ * @brief Move each leg to its position in the new movement
+ * 
+ */
 void sm_switch_move(void) {
     if (g_state.swhitch_ref > 0) {
         g_state.swhitch_ref--;
@@ -314,8 +366,10 @@ void sm_switch_move(void) {
     g_state.prev = g_state.move;
 }
 
-
-
+/**
+ * @brief Update the global state of the servomotor module
+ * 
+ */
 void sm_next_state(void) {
     if (g_state.move != SM_STOP && g_state.move != g_state.prev) {
         sm_switch_move();
