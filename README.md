@@ -16,7 +16,7 @@ Spider robot on stm32
 ## Pin allocation  
 
 - A0  :
-- A1  :
+- A1  : Voltage divider (to measure battery level)
 - A2  :
 - A3  :
 - A4  :
