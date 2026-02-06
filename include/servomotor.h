@@ -52,6 +52,16 @@
 #define SM_RLX_CCR  &(SM_TIMER_2->CCR3)
 #define SM_FLX_CCR  &(SM_TIMER_2->CCR4)
 
+// Invert servomotor's coordonates (0° <-> 90°)
+#define SM_FRZ_INVERT (false)
+#define SM_RRZ_INVERT (false)
+#define SM_RLZ_INVERT (false)
+#define SM_FLZ_INVERT (false)
+#define SM_FRX_INVERT (true)
+#define SM_RRX_INVERT (true)
+#define SM_RLX_INVERT (true)
+#define SM_FLX_INVERT (true)
+
 typedef enum {
     SM_FRZ=0, // Front Right Z axis
     SM_RRZ=1, // Rear Right Z axis

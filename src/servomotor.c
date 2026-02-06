@@ -189,7 +189,7 @@ void init_module_servomotor(void) {
  * @param angle Target angle
  */
 void sm_set_motor(sm_id m, unsigned int angle) {
-    if(!ASSERTL(angle < SM_MAX_ANGLE,"invalid angle : motor %d (%u)", m,  angle)) {
+    if(!ASSERTL(angle <= SM_MAX_ANGLE,"invalid angle : motor %d (%u)", m,  angle)) {
         return;
     }
     if(!ASSERTL(m < NB_SERVOMOTOR,"invalid motor (%u)", m)) {
@@ -405,14 +405,14 @@ void sm_move(time_t t) {
             SWITCH_G_LED();
             next_update = next_update + period;
             sm_next_state();
-            sm_set_motor(SM_FRZ, g_state.angles[SM_FRZ]);
-            sm_set_motor(SM_RRZ, g_state.angles[SM_RRZ]);
-            sm_set_motor(SM_RLZ, g_state.angles[SM_RLZ]);
-            sm_set_motor(SM_FLZ, g_state.angles[SM_FLZ]);
-            sm_set_motor(SM_FRX, g_state.angles[SM_FRX]);
-            sm_set_motor(SM_RRX, g_state.angles[SM_RRX]);
-            sm_set_motor(SM_RLX, g_state.angles[SM_RLX]);
-            sm_set_motor(SM_FLX, g_state.angles[SM_FLX]);
+            sm_set_motor(SM_FRZ, (SM_FRZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FRZ] : g_state.angles[SM_FRZ]));
+            sm_set_motor(SM_RRZ, (SM_RRZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RRZ] : g_state.angles[SM_RRZ]));
+            sm_set_motor(SM_RLZ, (SM_RLZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RLZ] : g_state.angles[SM_RLZ]));
+            sm_set_motor(SM_FLZ, (SM_FLZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FLZ] : g_state.angles[SM_FLZ]));
+            sm_set_motor(SM_FRX, (SM_FRX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FRX] : g_state.angles[SM_FRX]));
+            sm_set_motor(SM_RRX, (SM_RRX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RRX] : g_state.angles[SM_RRX]));
+            sm_set_motor(SM_RLX, (SM_RLX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RLX] : g_state.angles[SM_RLX]));
+            sm_set_motor(SM_FLX, (SM_FLX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FLX] : g_state.angles[SM_FLX]));
 
             // sm_set_motor(SM_FRZ, SM_MAX_ANGLE - 1);
             // sm_set_motor(SM_RRZ, SM_MAX_ANGLE - 1);
