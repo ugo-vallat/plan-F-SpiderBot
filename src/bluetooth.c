@@ -30,6 +30,8 @@
 #define TX_BUFFER_SIZE  128
 #define USART_DMAT      (1 << 7)
 
+#define BT_STATE_PIN    8
+
 // Tampon de réception et index de lecture
 volatile uint8_t g_dma_rx_buffer[RX_BUFFER_SIZE];
 static uint32_t g_read_index = 0;
@@ -48,6 +50,11 @@ void init_module_bluetooth(void) {
     GPIOA->MODER |=  ((0x2 << 18) | (0x2 << 20)); 
     GPIOA->AFRH  &= ~((0xF << 4) | (0xF << 8)); 
     GPIOA->AFRH  |=  ((0x7 << 4) | (0x7 << 8)); 
+
+    // GPIO PA8 pour indiquer l'état du Bluetooth
+    GPIOA->MODER &= ~(3 << (BT_STATE_PIN * 2));
+    GPIOA->PUPDR &= ~(3 << (BT_STATE_PIN * 2)); // Reset
+    GPIOA->PUPDR |=  (2 << (BT_STATE_PIN * 2)); // Set Pull-down
 
     // ---------------- CONFIGURATION DMA RX (Stream 2) ----------------
     DMA2_Stream2->CR &= ~1; 
@@ -151,4 +158,17 @@ void bluetooth_send_string(const char* str) {
 
 cmd_t bluetooth_get_last_cmd(void) {
     return g_bluetooth_last_cmd_received;
+}
+
+/**
+ * @brief Vérifie si un appareil est connecté au Bluetooth
+ * @return true (1) si connecté, false (0) sinon
+ */
+bool bluetooth_is_connected(void) {
+    // Lire le registre d'entrée (IDR) bit 8
+    if (GPIOA->IDR & (1 << BT_STATE_PIN)) {
+        return true;  
+    } else {
+        return false;
+    }
 }

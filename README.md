@@ -23,9 +23,9 @@ Spider robot on stm32
 - A5  :
 - A6  :
 - A7  :
-- A8  :
-- A9  :
-- A10 :
+- A8  : BL STATE
+- A9  : BL RX
+- A10 : BL TX
 - A11 :
 - A12 :
 - A13 :

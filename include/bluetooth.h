@@ -18,4 +18,7 @@ void bluetooth_send_string(const char* str);
 
 void bluetooth_print_dma_debug(void);
 
+// Vérifie si un appareil est connecté au Bluetooth
+bool bluetooth_is_connected(void);
+
 #endif // __BLUETOOTH_H__
