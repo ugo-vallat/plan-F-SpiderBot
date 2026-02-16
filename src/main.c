@@ -38,6 +38,7 @@ void main_loop(void) {
         ctrl_update_robot();
         sm_move(1000000);
         get_battery_percentage();
+        bluetooth_process_led_task();
     }
 }
 

@@ -93,6 +93,7 @@ void init_module_bluetooth(void) {
 void send_char(char c) {
     while (!(USART1_SR & USART_TXE));
     USART1_DR = c;
+    bluetooth_trigger_activity();
 }
 void bluetooth_print_dma_debug(void) {
     PRINTL("--- DMA DEBUG INFO ---\n");
@@ -109,10 +110,12 @@ void bluetooth_print_dma_debug(void) {
         }
     }
     PRINTL("----------------------\n");
+    bluetooth_trigger_activity();
 }
 void bluetooth_receive_cmd(void) {
     // Calculer la position d'écriture actuelle du DMA.
     uint32_t write_index = RX_BUFFER_SIZE - DMA2_Stream2->NDTR;
+    bool has_received_data = false;
 
     // Tant que notre index de lecture n'a pas rattrapé l'index d'écriture du DMA
     while (g_read_index != write_index) {
@@ -129,6 +132,9 @@ void bluetooth_receive_cmd(void) {
 
         // Avancer l'index de lecture en mode circulaire
         g_read_index = (g_read_index + 1) % RX_BUFFER_SIZE;
+    }
+    if (has_received_data) {
+        bluetooth_trigger_activity();
     }
 }
 
@@ -150,6 +156,7 @@ void bluetooth_send_string(const char* str) {
 
     // Activer le DMA
     DMA2_Stream7->CR |= 1;
+    bluetooth_trigger_activity();
 }
 
 cmd_t bluetooth_get_last_cmd(void) {

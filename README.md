@@ -26,7 +26,7 @@ Spider robot on stm32
 - A8  : BL STATE
 - A9  : BL RX
 - A10 : BL TX
-- A11 :
+- A11 : 
 - A12 :
 - A13 :
 - A14 :
@@ -48,7 +48,7 @@ Spider robot on stm32
 - B14 :
 - B15 :
 - C0  : led
-- C1  :
+- C1  : 
 - C2  :
 - C3  :
 - C4  :
@@ -97,3 +97,10 @@ Spider robot on stm32
 - E15 :
 - H0  :
 - H1  :
+
+
+LEDs :
+- Green : servomotors
+- Orange : Bluetooth
+- Red : Battery
+- Blue : main

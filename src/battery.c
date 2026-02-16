@@ -4,6 +4,7 @@
 #include <tinyprintf.h>
 #include <log.h>
 #include <battery.h>
+#include <led.h>
 
 #define ADC_CHANNEL_1    1
 #define RCC_AHB1ENR_GPIOAEN  (1 << 0)   
@@ -65,6 +66,12 @@ int get_battery_percentage(void) {
     if (pourcentage < 0)   pourcentage = 0;
 
     PRINTL("battery: %d%%\n", (int)pourcentage);
+
+    if (pourcentage < 10) {
+        LED_R_ON();  
+    } else {
+        LED_R_OFF();
+    }
 
     return (int)pourcentage;
 }

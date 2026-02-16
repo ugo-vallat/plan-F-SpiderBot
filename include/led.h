@@ -41,4 +41,7 @@
 
 void init_module_led(void);
 
+void led_trigger_net_activity(void);
+void led_process_task(void);
+
 #endif // __LED_H__

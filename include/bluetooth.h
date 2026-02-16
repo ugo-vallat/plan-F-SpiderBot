@@ -21,4 +21,6 @@ void bluetooth_print_dma_debug(void);
 // Vérifie si un appareil est connecté au Bluetooth
 bool bluetooth_is_connected(void);
 
+void bluetooth_process_led_task(void);
+
 #endif // __BLUETOOTH_H__
