@@ -15,7 +15,6 @@
 #define USART1_DR       _IOREG(USART1_BASE, 0x04)
 #define USART1_BRR      _IOREG(USART1_BASE, 0x08)
 #define USART1_CR1      _IOREG(USART1_BASE, 0x0C)
-// Ajout du registre CR3 pour activer le DMA
 #define USART1_CR3      _IOREG(USART1_BASE, 0x14) 
 
 #define USART_TXE       (1 << 7)
@@ -63,9 +62,7 @@ void init_module_bluetooth(void) {
     DMA2_Stream2->M0AR = (uint32_t)g_dma_rx_buffer;
     DMA2_Stream2->NDTR = RX_BUFFER_SIZE;            
     // Channel 4, Prio High, Circular, MemInc
-    DMA2_Stream2->CR = (4 << 25) | (2 << 16) | (1 << 8) | (1 << 10) | (1 << 6); // Note: Bit 6 = DIR Mem->Periph (00) ou Periph->Mem (00 pour RX c'est default, mais ici DIR=00)
-    // Correction RX: DIR doit être 00 (Peripheral to Memory). Le code précédent était correct.
-    // Assurons-nous : Bits 6-7 (DIR) = 00.
+    DMA2_Stream2->CR = (4 << 25) | (2 << 16) | (1 << 8) | (1 << 10) | (1 << 6);
     DMA2_Stream2->CR &= ~(3 << 6); // Force DIR = 00
     DMA2_Stream2->CR |= 1; // Enable RX
 
@@ -101,13 +98,12 @@ void bluetooth_print_dma_debug(void) {
     PRINTL("--- DMA DEBUG INFO ---\n");
     
     // Affiche la position courante du DMA (NDTR)
-    // Rappel : NDTR décrémente (64 -> 63 -> ... -> 0)
     uint32_t remaining = DMA2_Stream2->NDTR;
     PRINTL("DMA Data remaining to transfer (NDTR): %d\n", remaining);
     
     PRINTL("Buffer Content (Non-zero):\n");
     for (int i = 0; i < RX_BUFFER_SIZE; i++) {
-        // On affiche seulement les cases qui ne sont pas vides pour ne pas spammer
+        // On affiche seulement les cases qui ne sont pas vides
         if (g_dma_rx_buffer[i] != 0) {
             PRINTL("[%d]: 0x%02X (%d)\n", i, g_dma_rx_buffer[i], g_dma_rx_buffer[i]);
         }
@@ -121,9 +117,9 @@ void bluetooth_receive_cmd(void) {
     // Tant que notre index de lecture n'a pas rattrapé l'index d'écriture du DMA
     while (g_read_index != write_index) {
         
-        uint8_t data = g_dma_rx_buffer[g_read_index]; // Lire la donnée
+        uint8_t data = g_dma_rx_buffer[g_read_index];
         
-        // Traitement de la commande (logique identique à votre code précédent)
+        // Traitement de la commande
         if (data < CMD_MAX) {
             PRINTL("New cmd : %u\n", data);
             g_bluetooth_last_cmd_received = data;
