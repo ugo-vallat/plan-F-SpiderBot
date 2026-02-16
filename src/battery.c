@@ -49,7 +49,7 @@ int get_battery_percentage(void) {
     PRINTL("ADC Raw: %ld\n", adc_val);
 
     // Calcul du pourcentage
-    // Calibrage basé sur vos mesures :
+    // Calibrage :
     // - 8.4V (100%) ~= 3300 ADC
     // - 6.0V (0%)   ~= 2350 ADC
     // - Plage       = 950 points ADC
