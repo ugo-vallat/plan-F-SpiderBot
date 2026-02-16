@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 /**
- * @brief Initialise le module battery.
- * Configure l'ADC1 et la broche PA1.
+ * @brief Initialiser le module battery.
+ * Configurer l'ADC1 et la broche PA1.
  */
 void init_module_battery(void);
 
