@@ -57,9 +57,9 @@
 #define SM_RRZ_INVERT (false)
 #define SM_RLZ_INVERT (false)
 #define SM_FLZ_INVERT (false)
-#define SM_FRX_INVERT (true)
+#define SM_FRX_INVERT (false)
 #define SM_RRX_INVERT (true)
-#define SM_RLX_INVERT (true)
+#define SM_RLX_INVERT (false)
 #define SM_FLX_INVERT (true)
 
 typedef enum {

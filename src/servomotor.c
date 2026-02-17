@@ -24,8 +24,8 @@
 
 #define SM_MAX_ANGLE    SM_MOVE_DIVIDER
 
-#define CONVERT_ANGLE_TIMER_1(angle) (SM_TIMER_1_DUTY_MIN + ((SM_TIMER_1_DUTY_RANGE* angle / SM_MAX_ANGLE))) 
-#define CONVERT_ANGLE_TIMER_2(angle) (SM_TIMER_2_DUTY_MIN + ((SM_TIMER_2_DUTY_RANGE* angle / SM_MAX_ANGLE))) 
+#define CONVERT_ANGLE_TIMER_1(angle) (SM_TIMER_1_DUTY_MIN + SM_TIMER_1_DUTY_RANGE/8 + ((SM_TIMER_1_DUTY_RANGE*6/8 * (angle) / SM_MAX_ANGLE))) 
+#define CONVERT_ANGLE_TIMER_2(angle) (SM_TIMER_2_DUTY_MIN + ((SM_TIMER_2_DUTY_RANGE * (angle) / SM_MAX_ANGLE))) 
 
 #define NB_SERVOMOTOR       8
 
@@ -50,6 +50,7 @@ typedef struct {
     volatile gpio_t *gpio;
     unsigned char af;
     volatile uint32_t *ccr;
+    bool invert;
 } sm_config_t;
 
 
@@ -58,15 +59,17 @@ typedef struct {
  * 
  */
 const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
-    [SM_FRZ] = {SM_FRZ_PIN, SM_FRZ_GPIO, SM_FRZ_AF, SM_FRZ_CCR},  // TIM3_CH3
-    [SM_RRZ] = {SM_RRZ_PIN, SM_RRZ_GPIO, SM_RRZ_AF, SM_RRZ_CCR},  // TIM3_CH4
-    [SM_RLZ] = {SM_RLZ_PIN, SM_RLZ_GPIO, SM_RLZ_AF, SM_RLZ_CCR},  // TIM3_CH1
-    [SM_FLZ] = {SM_FLZ_PIN, SM_FLZ_GPIO, SM_FLZ_AF, SM_FLZ_CCR},  // TIM3_CH2
-    [SM_FRX] = {SM_FRX_PIN, SM_FRX_GPIO, SM_FRX_AF, SM_FRX_CCR},  // TIM4_CH1
-    [SM_RRX] = {SM_RRX_PIN, SM_RRX_GPIO, SM_RRX_AF, SM_RRX_CCR},  // TIM4_CH2
-    [SM_RLX] = {SM_RLX_PIN, SM_RLX_GPIO, SM_RLX_AF, SM_RLX_CCR},  // TIM4_CH3
-    [SM_FLX] = {SM_FLX_PIN, SM_FLX_GPIO, SM_FLX_AF, SM_FLX_CCR}   // TIM4_CH4
+    [SM_FRZ] = {SM_FRZ_PIN, SM_FRZ_GPIO, SM_FRZ_AF, SM_FRZ_CCR, SM_FRZ_INVERT},  // TIM3_CH3
+    [SM_RRZ] = {SM_RRZ_PIN, SM_RRZ_GPIO, SM_RRZ_AF, SM_RRZ_CCR, SM_RRZ_INVERT},  // TIM3_CH4
+    [SM_RLZ] = {SM_RLZ_PIN, SM_RLZ_GPIO, SM_RLZ_AF, SM_RLZ_CCR, SM_RLZ_INVERT},  // TIM3_CH1
+    [SM_FLZ] = {SM_FLZ_PIN, SM_FLZ_GPIO, SM_FLZ_AF, SM_FLZ_CCR, SM_FLZ_INVERT},  // TIM3_CH2
+    [SM_FRX] = {SM_FRX_PIN, SM_FRX_GPIO, SM_FRX_AF, SM_FRX_CCR, SM_FRX_INVERT},  // TIM4_CH1
+    [SM_RRX] = {SM_RRX_PIN, SM_RRX_GPIO, SM_RRX_AF, SM_RRX_CCR, SM_RRX_INVERT},  // TIM4_CH2
+    [SM_RLX] = {SM_RLX_PIN, SM_RLX_GPIO, SM_RLX_AF, SM_RLX_CCR, SM_RLX_INVERT},  // TIM4_CH3
+    [SM_FLX] = {SM_FLX_PIN, SM_FLX_GPIO, SM_FLX_AF, SM_FLX_CCR, SM_FLX_INVERT}   // TIM4_CH4
 };
+
+
 
 
 /**
@@ -78,7 +81,7 @@ sm_state_t g_state = {
     SM_STOP,    // Previous movement
     0,          // reference angle
     0,  // reference angle during move switch
-    {0, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2, SM_MAX_ANGLE*3/4}, // shift of each servomotor with the reference angle
+    {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2}, // shift of each servomotor with the reference angle
     {0, 0, 0, 0, 0, 0, 0, 0}    // Current destination angle
 };
 
@@ -200,13 +203,13 @@ void sm_set_motor(sm_id m, unsigned int angle) {
     case SM_RRZ:
     case SM_RLZ:
     case SM_FLZ:
-        *(SM_CONFIG[m].ccr) = CONVERT_ANGLE_TIMER_1(angle);
+        *(SM_CONFIG[m].ccr) = (SM_CONFIG[m].invert) ? (CONVERT_ANGLE_TIMER_1((SM_MAX_ANGLE - angle))) : (CONVERT_ANGLE_TIMER_1(angle));
         break;
-    case SM_FRX:
     case SM_RRX:
+    case SM_FRX:
     case SM_RLX:
     case SM_FLX:
-        *(SM_CONFIG[m].ccr) = CONVERT_ANGLE_TIMER_2(angle);
+        *(SM_CONFIG[m].ccr) = (SM_CONFIG[m].invert) ? (CONVERT_ANGLE_TIMER_2(SM_MAX_ANGLE - angle)) : (CONVERT_ANGLE_TIMER_2(angle));
         break;
     }
 }
@@ -297,7 +300,7 @@ unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
                 return SM_MAX_ANGLE / 2;
             }
 
-            if ((g_state.ref + g_state.shift[smz_id]) % SM_MAX_ANGLE == 5) {
+            if ((g_state.ref + g_state.shift[smz_id]) % SM_MAX_ANGLE == 8) {
                 return 0;
             }
             return g_state.angles[smx_id];
@@ -326,9 +329,16 @@ unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
  */
 void sm_switch_move(void) {
     if (g_state.swhitch_ref > 0) {
+        if (g_state.swhitch_ref < 5) {
+            g_state.angles[SM_FRX] = 0;
+            g_state.angles[SM_RRX] = 0;
+            g_state.angles[SM_RLX] = 0;
+            g_state.angles[SM_FLX] = 0;
+        }
         g_state.swhitch_ref--;
         return;
     }
+    
     g_state.angles[SM_FRX] = 0;
     g_state.angles[SM_RRX] = 0;
     g_state.angles[SM_RLX] = 0;
@@ -405,24 +415,14 @@ void sm_move(time_t t) {
             SWITCH_G_LED();
             next_update = next_update + period;
             sm_next_state();
-            sm_set_motor(SM_FRZ, (SM_FRZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FRZ] : g_state.angles[SM_FRZ]));
-            sm_set_motor(SM_RRZ, (SM_RRZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RRZ] : g_state.angles[SM_RRZ]));
-            sm_set_motor(SM_RLZ, (SM_RLZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RLZ] : g_state.angles[SM_RLZ]));
-            sm_set_motor(SM_FLZ, (SM_FLZ_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FLZ] : g_state.angles[SM_FLZ]));
-            sm_set_motor(SM_FRX, (SM_FRX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FRX] : g_state.angles[SM_FRX]));
-            sm_set_motor(SM_RRX, (SM_RRX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RRX] : g_state.angles[SM_RRX]));
-            sm_set_motor(SM_RLX, (SM_RLX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_RLX] : g_state.angles[SM_RLX]));
-            sm_set_motor(SM_FLX, (SM_FLX_INVERT ? SM_MAX_ANGLE - g_state.angles[SM_FLX] : g_state.angles[SM_FLX]));
-
-            // sm_set_motor(SM_FRZ, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_RRZ, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_RLZ, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_FLZ, SM_MAX_ANGLE - 1);
-            // sm_set_motor(SM_FRX, 0);
-            // sm_set_motor(SM_RRX, 0);
-            // sm_set_motor(SM_RLX, 0);
-            // sm_set_motor(SM_FLX, 0);
-
+            sm_set_motor(SM_FRZ, g_state.angles[SM_FRZ]);
+            sm_set_motor(SM_RRZ, g_state.angles[SM_RRZ]);
+            sm_set_motor(SM_RLZ, g_state.angles[SM_RLZ]);
+            sm_set_motor(SM_FLZ, g_state.angles[SM_FLZ]);
+            sm_set_motor(SM_FRX, g_state.angles[SM_FRX]);
+            sm_set_motor(SM_RRX, g_state.angles[SM_RRX]);   
+            sm_set_motor(SM_RLX, g_state.angles[SM_RLX]);
+            sm_set_motor(SM_FLX, g_state.angles[SM_FLX]);
         }
     }
 }

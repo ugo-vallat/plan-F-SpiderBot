@@ -1,3 +1,11 @@
+/**
+ * @file battery.c
+ * @brief Implementation of the battery monitoring module.
+ * * Handles ADC1 configuration on PA1 to read battery voltage,
+ * calculates the remaining percentage using integer arithmetic,
+ * and triggers a low-battery LED warning.
+ */
+
 #include <stm32f4/adc.h>
 #include <stm32f4/rcc.h>
 #include <stm32f4/gpio.h>
@@ -6,72 +14,86 @@
 #include <battery.h>
 #include <led.h>
 
-#define ADC_CHANNEL_1    1
-#define RCC_AHB1ENR_GPIOAEN  (1 << 0)   
-#define RCC_APB2ENR_ADC1EN   (1 << 8)
+/* --- ADC Configuration Defines --- */
+#define ADC_CHANNEL_1           1
+#define RCC_AHB1ENR_GPIOAEN     (1 << 0)   
+#define RCC_APB2ENR_ADC1EN      (1 << 8)
+#define ADC_TIMEOUT_CYCLES      10000
 
-/* --- FONCTION D'INITIALISATION --- */
+/* --- Battery Calibration Defines --- */
+// Based on a voltage divider connected to a 2-cell Li-Ion (6.0V - 8.4V)
+#define BATTERY_ADC_MAX_VAL     3300  /*!< ADC value corresponding to 100% (approx 8.4V) */
+#define BATTERY_ADC_MIN_VAL     2350  /*!< ADC value corresponding to 0% (approx 6.0V) */
+#define BATTERY_ADC_RANGE       (BATTERY_ADC_MAX_VAL - BATTERY_ADC_MIN_VAL) /*!< Range = 950 */
+
+#define BATTERY_LOW_THRESHOLD   10    /*!< Percentage below which the red LED turns on */
+
+
+/**
+ * @brief Initializes the battery module (GPIO and ADC1).
+ */
 void init_module_battery(void) {
     PRINTL("[%s] ... ", __func__);
 
-    // Activer les horloges
+    // Enable Clocks for GPIOA and ADC1
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; 
     RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;  
 
-    //Configurer PA1
+    // Configure PA1 in Analog mode (MODER = 11)
     GPIOA->MODER |= (3 << (1 * 2)); 
 
-    //Activer l'ADC
+    // Configure and enable ADC1
     ADC1->CR1 = 0; 
     ADC1->CR2 = 0;
-    ADC1->CR2 |= ADC_ADON; 
+    ADC1->CR2 |= ADC_ADON; // Power up the ADC
     
-    for(volatile int i=0; i<2000; i++);
+    // Short delay to allow ADC voltage to stabilize after power-on (tSTAB)
+    for(volatile int i = 0; i < 2000; i++);
 
     PRINTL("OK\n");
 }
 
 
-/* ---FONCTION DE MESURE --- */
+/**
+ * @brief Reads the ADC and calculates the battery percentage.
+ * @return The battery level (0-100), or -1 if the ADC conversion times out.
+ */
 int get_battery_percentage(void) {
+    // Select ADC Channel 1 for the first conversion in the regular sequence
     ADC1->SQR3 = ADC_CHANNEL_1;
+    
+    // Start the conversion
     ADC1->CR2 |= ADC_SWSTART;
-    int timeout = 10000;
+    
+    // Wait for End Of Conversion (EOC) flag with a timeout mechanism
+    int timeout = ADC_TIMEOUT_CYCLES;
     while (!(ADC1->SR & ADC_EOC)) {
         if (--timeout == 0) {
-            PRINTL("ERREUR: ADC Timeout\n");
+            PRINTL("ERROR: ADC Conversion Timeout\n");
             return -1; 
         }
     }
 
-    // Lire la valeur
+    // 4. Read the raw ADC value
     uint32_t adc_val = ADC1->DR;
-    
     PRINTL("ADC Raw: %ld\n", adc_val);
 
-    // Calcul du pourcentage
-    // Calibrage :
-    // - 8.4V (100%) ~= 3300 ADC
-    // - 6.0V (0%)   ~= 2350 ADC
-    // - Plage       = 950 points ADC
-    
-    int32_t val_min = 2350;
-    int32_t plage   = 950;
-    
-    // Formule : (Valeur_Lue - Min) * 100 / Plage
-    int32_t pourcentage = ((int32_t)adc_val - val_min) * 100 / plage;
+    // Calculate percentage using integer arithmetic
+    // Formula: (Current_Value - Min_Value) * 100 / Range
+    int32_t percentage = ((int32_t)adc_val - BATTERY_ADC_MIN_VAL) * 100 / BATTERY_ADC_RANGE;
 
-    // Bornage (Clamping) pour rester entre 0 et 100
-    if (pourcentage > 100) pourcentage = 100;
-    if (pourcentage < 0)   pourcentage = 0;
+    // Clamp the value between 0% and 100%
+    if (percentage > 100) percentage = 100;
+    if (percentage < 0)   percentage = 0;
 
-    PRINTL("battery: %d%%\n", (int)pourcentage);
+    PRINTL("Battery: %d%%\n", (int)percentage);
 
-    if (pourcentage < 10) {
+    // Check low battery threshold and update LED status
+    if (percentage < BATTERY_LOW_THRESHOLD) {
         LED_R_ON();  
     } else {
         LED_R_OFF();
     }
 
-    return (int)pourcentage;
+    return (int)percentage;
 }
