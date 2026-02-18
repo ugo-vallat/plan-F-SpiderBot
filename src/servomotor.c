@@ -24,7 +24,8 @@
 
 #define SM_MAX_ANGLE    SM_MOVE_DIVIDER
 
-#define CONVERT_ANGLE_TIMER_1(angle) (SM_TIMER_1_DUTY_MIN + SM_TIMER_1_DUTY_RANGE/8 + ((SM_TIMER_1_DUTY_RANGE*6/8 * (angle) / SM_MAX_ANGLE))) 
+// #define CONVERT_ANGLE_TIMER_1(angle) (SM_TIMER_1_DUTY_MIN + SM_TIMER_1_DUTY_RANGE/8 + ((SM_TIMER_1_DUTY_RANGE*6/8 * (angle) / SM_MAX_ANGLE))) 
+#define CONVERT_ANGLE_TIMER_1(angle) (SM_TIMER_1_DUTY_MIN + ((SM_TIMER_1_DUTY_RANGE * (angle) / SM_MAX_ANGLE))) 
 #define CONVERT_ANGLE_TIMER_2(angle) (SM_TIMER_2_DUTY_MIN + ((SM_TIMER_2_DUTY_RANGE * (angle) / SM_MAX_ANGLE))) 
 
 #define NB_SERVOMOTOR       8
@@ -71,10 +72,10 @@ const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
 
 const int SM_SHIFT[SM_MAX_MOVE][4] = {
     [SM_STOP]           = {0, 0, 0, 0},
-    [SM_FORWARD]        = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
-    [SM_REVERSE]        = {SM_MAX_ANGLE/4, SM_MAX_ANGLE/2, 0, SM_MAX_ANGLE*3/4},
-    [SM_ROTATE_LEFT]    = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/2, SM_MAX_ANGLE/4},
-    [SM_ROTATE_RIGHT]   = {SM_MAX_ANGLE*3/4, 0, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
+    [SM_FORWARD]        = {SM_MAX_ANGLE/2, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, 0 },
+    [SM_REVERSE]        = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
+    [SM_ROTATE_LEFT]   = {SM_MAX_ANGLE*3/4, 0, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
+    [SM_ROTATE_RIGHT]    = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/2, SM_MAX_ANGLE/4},
     [SM_INIT_Z_AXIS]    = {0, 0, 0, 0},
     [SM_INIT_X_AXIS]    = {0, 0, 0, 0},
     [SM_START]          = {0, 0, 0, 0}
@@ -92,7 +93,7 @@ sm_state_t g_state = {
     .ref = 0,          // reference angle
     .swhitch_ref = 0,  // reference angle during move switch
     .shift = {SM_SHIFT[SM_START][0], SM_SHIFT[SM_START][1], SM_SHIFT[SM_START][2], SM_SHIFT[SM_START][3]}, // shift of each servomotor with the reference angle
-    .angles = {0, SM_MAX_ANGLE, 0, SM_MAX_ANGLE, 0, 0, 0, 0}    // Current destination angle
+    .angles = {SM_MAX_ANGLE, 0, SM_MAX_ANGLE, 0, 0, 0, 0, 0}    // Current destination angle
 };
 
 void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc);
