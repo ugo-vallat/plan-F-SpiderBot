@@ -35,7 +35,6 @@
 /* Move Z axis from 0 to SM_MAX_ANGLE */
 #define Z_AXIS_MOVE_LEFT(sm_id)     (((SM_MAX_ANGLE<<1) - g_state.ref - g_state.shift[sm_id]) % SM_MAX_ANGLE)
 
-
 typedef struct {
     sm_move_t move;
     sm_move_t prev;
@@ -70,6 +69,17 @@ const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
 };
 
 
+const int SM_SHIFT[SM_MAX_MOVE][4] = {
+    [SM_STOP]           = {0, 0, 0, 0},
+    [SM_FORWARD]        = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
+    [SM_REVERSE]        = {SM_MAX_ANGLE/4, SM_MAX_ANGLE*3/4, 0, SM_MAX_ANGLE/2},
+    [SM_ROTATE_LEFT]    = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
+    [SM_ROTATE_RIGHT]   = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
+    [SM_INIT_Z_AXIS]    = {0, 0, 0, 0},
+    [SM_INIT_X_AXIS]    = {0, 0, 0, 0},
+    [SM_START]          = {0, 0, 0, 0}
+};
+
 
 
 /**
@@ -77,12 +87,12 @@ const sm_config_t SM_CONFIG[NB_SERVOMOTOR] = {
  * 
  */
 sm_state_t g_state = {
-    SM_STOP,    // Current movement
-    SM_STOP,    // Previous movement
-    0,          // reference angle
-    0,  // reference angle during move switch
-    {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2}, // shift of each servomotor with the reference angle
-    {0, 0, 0, 0, 0, 0, 0, 0}    // Current destination angle
+    .move = SM_START,    // Current movement
+    .prev = SM_STOP,    // Previous movement
+    .ref = 0,          // reference angle
+    .swhitch_ref = 0,  // reference angle during move switch
+    .shift = {SM_SHIFT[SM_START][0], SM_SHIFT[SM_START][1], SM_SHIFT[SM_START][2], SM_SHIFT[SM_START][3]}, // shift of each servomotor with the reference angle
+    .angles = {0, SM_MAX_ANGLE, 0, SM_MAX_ANGLE, 0, 0, 0, 0}    // Current destination angle
 };
 
 void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc);
@@ -244,6 +254,8 @@ unsigned int sm_get_z_axis_pos(sm_id sm) {
                 return g_state.angles[sm];
             case SM_INIT_X_AXIS:
                 return g_state.angles[sm];
+            case SM_START:
+                return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
                 return g_state.angles[sm];
@@ -271,6 +283,8 @@ unsigned int sm_get_z_axis_pos(sm_id sm) {
                 }
                 return g_state.angles[sm];
             case SM_INIT_X_AXIS:
+                return g_state.angles[sm];
+            case SM_START:
                 return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
@@ -317,6 +331,8 @@ unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
             return g_state.angles[smx_id];
         case SM_INIT_Z_AXIS:
             return g_state.angles[smx_id];
+        case SM_START:
+            return 0;
         default:
             WARNL("Undefined move %d", g_state.move);
     }
@@ -402,6 +418,10 @@ void sm_set_next_move(sm_move_t m) {
     PRINTL("New move : %d\n", m);
     g_state.prev = g_state.move;
     g_state.move = m;
+    g_state.shift[0] = SM_SHIFT[m][0];
+    g_state.shift[1] = SM_SHIFT[m][1];
+    g_state.shift[2] = SM_SHIFT[m][2];
+    g_state.shift[3] = SM_SHIFT[m][3];
 }
 
 void sm_move(time_t t) {
