@@ -78,4 +78,10 @@ void bluetooth_print_dma_debug(void);
  */
 void bluetooth_process_led_task(void);
 
+/**
+ * @brief Triggers a brief flicker on the Bluetooth status LED (Orange LED).
+ * Creates a "negative pulse" effect to indicate data activity when connected.
+ */
+void bluetooth_trigger_activity(void);
+
 #endif // BLUETOOTH_H
