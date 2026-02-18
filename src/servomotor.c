@@ -76,7 +76,8 @@ const int SM_SHIFT[SM_MAX_MOVE][4] = {
     [SM_ROTATE_LEFT]    = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
     [SM_ROTATE_RIGHT]   = {0, SM_MAX_ANGLE*3/4, SM_MAX_ANGLE/4, SM_MAX_ANGLE/2},
     [SM_INIT_Z_AXIS]    = {0, 0, 0, 0},
-    [SM_INIT_X_AXIS]    = {0, 0, 0, 0}
+    [SM_INIT_X_AXIS]    = {0, 0, 0, 0},
+    [SM_START]          = {0, 0, 0, 0}
 };
 
 
@@ -86,12 +87,12 @@ const int SM_SHIFT[SM_MAX_MOVE][4] = {
  * 
  */
 sm_state_t g_state = {
-    .move = SM_STOP,    // Current movement
+    .move = SM_START,    // Current movement
     .prev = SM_STOP,    // Previous movement
     .ref = 0,          // reference angle
     .swhitch_ref = 0,  // reference angle during move switch
-    .shift = {SM_SHIFT[SM_STOP][0], SM_SHIFT[SM_STOP][1], SM_SHIFT[SM_STOP][2], SM_SHIFT[SM_STOP][3]}, // shift of each servomotor with the reference angle
-    .angles = {0, 0, 0, 0, 0, 0, 0, 0}    // Current destination angle
+    .shift = {SM_SHIFT[SM_START][0], SM_SHIFT[SM_START][1], SM_SHIFT[SM_START][2], SM_SHIFT[SM_START][3]}, // shift of each servomotor with the reference angle
+    .angles = {0, SM_MAX_ANGLE, 0, SM_MAX_ANGLE, 0, 0, 0, 0}    // Current destination angle
 };
 
 void init_sm_tim(volatile timx_t *tim, unsigned int arr, unsigned int psc);
@@ -253,6 +254,8 @@ unsigned int sm_get_z_axis_pos(sm_id sm) {
                 return g_state.angles[sm];
             case SM_INIT_X_AXIS:
                 return g_state.angles[sm];
+            case SM_START:
+                return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
                 return g_state.angles[sm];
@@ -280,6 +283,8 @@ unsigned int sm_get_z_axis_pos(sm_id sm) {
                 }
                 return g_state.angles[sm];
             case SM_INIT_X_AXIS:
+                return g_state.angles[sm];
+            case SM_START:
                 return g_state.angles[sm];
             default:
                 WARNL("undefined move : %d", g_state.move);
@@ -326,6 +331,8 @@ unsigned int sm_get_x_axis_pos(sm_id smx_id, sm_id smz_id) {
             return g_state.angles[smx_id];
         case SM_INIT_Z_AXIS:
             return g_state.angles[smx_id];
+        case SM_START:
+            return 0;
         default:
             WARNL("Undefined move %d", g_state.move);
     }
