@@ -15,6 +15,7 @@
 #include <servomotor.h>
 #include <control.h>
 #include <battery.h>
+#include <defines.h>
 
 /**
  * @brief Call init function of each module
@@ -36,7 +37,7 @@ void main_loop(void) {
         SWITCH_B_LED();
         bluetooth_receive_cmd();
         ctrl_update_robot();
-        sm_move(1000000);
+        sm_move(MAIN_SM_CALL_DURATION);
         get_battery_percentage();
         bluetooth_process_led_task();
     }

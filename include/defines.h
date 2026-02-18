@@ -13,6 +13,8 @@ typedef unsigned char bool;
 
 #define null ((void*) 0)
 
+/* _____ MAIN _____ */
+#define MAIN_SM_CALL_DURATION   1000000
 
 /* _____ COMMANDS _____ */
 typedef enum {
