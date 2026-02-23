@@ -363,30 +363,30 @@ void sm_switch_move(void) {
 
     if (sm_get_z_axis_pos(SM_FRZ) != g_state.angles[SM_FRZ]) {
         PRINTL("[SWITCH] Set Front Right Leg\n");
-        g_state.angles[SM_FRX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_FRX] = SM_MAX_ANGLE / 4;
         g_state.angles[SM_FRZ] = sm_get_z_axis_pos(SM_FRZ);
-        g_state.swhitch_ref = 10;
+        g_state.swhitch_ref = 7;
         return;
     }
     if (sm_get_z_axis_pos(SM_RRZ) != g_state.angles[SM_RRZ]) {
         PRINTL("[SWITCH] Set Rear Right Leg\n");
-        g_state.angles[SM_RRX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_RRX] = SM_MAX_ANGLE / 4;
         g_state.angles[SM_RRZ] = sm_get_z_axis_pos(SM_RRZ);
-        g_state.swhitch_ref = 10;
+        g_state.swhitch_ref = 7;
         return;
     }
     if (sm_get_z_axis_pos(SM_RLZ) != g_state.angles[SM_RLZ]) {
         PRINTL("[SWITCH] Set Rear Left Leg\n");
-        g_state.angles[SM_RLX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_RLX] = SM_MAX_ANGLE / 4;
         g_state.angles[SM_RLZ] = sm_get_z_axis_pos(SM_RLZ);
-        g_state.swhitch_ref = 10;
+        g_state.swhitch_ref = 7;
         return;
     }
     if (sm_get_z_axis_pos(SM_FLZ) != g_state.angles[SM_FLZ]) {
         PRINTL("[SWITCH] Set Front Left Leg\n");
-        g_state.angles[SM_FLX] = SM_MAX_ANGLE / 2;
+        g_state.angles[SM_FLX] = SM_MAX_ANGLE / 4;
         g_state.angles[SM_FLZ] = sm_get_z_axis_pos(SM_FLZ);
-        g_state.swhitch_ref = 10;
+        g_state.swhitch_ref = 7;
         return;
     }
 
