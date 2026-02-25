@@ -34,7 +34,7 @@ void init(void) {
 void main_loop(void) {
     while(true) {
         PRINTL("main loop\n");
-        SWITCH_B_LED();
+        SWITCH_O_LED();
         bluetooth_receive_cmd();
         ctrl_update_robot();
         sm_move(MAIN_SM_CALL_DURATION);

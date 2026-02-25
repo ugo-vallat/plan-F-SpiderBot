@@ -21,13 +21,13 @@ void init_module_led(void) {
     PRINTL("[%s] ... ", __func__);
     
     /* Enable clock for GPIOD where the board LEDs are connected */
-    enable_gpio(GPIOD);
+    enable_gpio(GPIOC);
     
     /* Initialize individual LED pins */
-    INIT_LED(GPIOD, LED_G_PIN);
-    INIT_LED(GPIOD, LED_O_PIN);
-    INIT_LED(GPIOD, LED_R_PIN);
-    INIT_LED(GPIOD, LED_B_PIN);
+    INIT_LED(GPIOC, LED_G_PIN);
+    INIT_LED(GPIOC, LED_O_PIN);
+    INIT_LED(GPIOC, LED_R_PIN);
+    INIT_LED(GPIOC, LED_B_PIN);
     
     PRINTL("OK\n");
 }
@@ -47,7 +47,7 @@ void bluetooth_trigger_activity(void) {
     }
     
     // Turn OFF the LED to start the flicker effect
-    LED_O_OFF();
+    LED_G_OFF();
     
     // Set the deadline for when the LED should turn back ON
     bt_led_deadline = get_time() + BT_LED_BLINK_DURATION_US;
@@ -64,21 +64,20 @@ void bluetooth_trigger_activity(void) {
  */
 void bluetooth_process_led_task(void) {
     if (bluetooth_is_connected()) {
-        
         if (bt_led_is_blinking) {
             // Check if the 20ms flicker duration has elapsed
             if (deadline_is_reached(bt_led_deadline)) {
-                LED_O_ON(); // End of flicker, restore solid state
+                LED_G_ON(); // End of flicker, restore solid state
                 bt_led_is_blinking = false;
             }
         } else {
             // Keep the LED on while connected and idle
-            LED_O_ON();
+            LED_G_ON();
         }
         
     } else {
         // Ensure LED is turned off if the connection drops
-        LED_O_OFF(); 
+        LED_G_OFF(); 
         bt_led_is_blinking = false;
     }
 }

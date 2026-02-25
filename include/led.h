@@ -18,25 +18,25 @@
 #define LED_ON(gpio, n) ((gpio)->BSRR = (1 << n))
 #define LED_OFF(gpio, n) ((gpio)->BSRR = (1 << (n + 16)))
 
-#define LED_G_PIN   12
-#define LED_R_PIN   13
-#define LED_O_PIN   14
-#define LED_B_PIN   15
+#define LED_G_PIN   0
+#define LED_R_PIN   1
+#define LED_O_PIN   2
+#define LED_B_PIN   3
 
-#define SWITCH_G_LED() SWITCH_LED(GPIOD, LED_G_PIN)
-#define SWITCH_O_LED() SWITCH_LED(GPIOD, LED_O_PIN)
-#define SWITCH_R_LED() SWITCH_LED(GPIOD, LED_R_PIN)
-#define SWITCH_B_LED() SWITCH_LED(GPIOD, LED_B_PIN)
+#define SWITCH_G_LED() SWITCH_LED(GPIOC, LED_G_PIN)
+#define SWITCH_O_LED() SWITCH_LED(GPIOC, LED_O_PIN)
+#define SWITCH_R_LED() SWITCH_LED(GPIOC, LED_R_PIN)
+#define SWITCH_B_LED() SWITCH_LED(GPIOC, LED_B_PIN)
 
-#define LED_G_ON() LED_ON(GPIOD, LED_G_PIN)
-#define LED_O_ON() LED_ON(GPIOD, LED_O_PIN)
-#define LED_R_ON() LED_ON(GPIOD, LED_R_PIN)
-#define LED_B_ON() LED_ON(GPIOD, LED_B_PIN)
+#define LED_G_ON() LED_ON(GPIOC, LED_G_PIN)
+#define LED_O_ON() LED_ON(GPIOC, LED_O_PIN)
+#define LED_R_ON() LED_ON(GPIOC, LED_R_PIN)
+#define LED_B_ON() LED_ON(GPIOC, LED_B_PIN)
 
-#define LED_G_OFF() LED_OFF(GPIOD, LED_G_PIN)
-#define LED_O_OFF() LED_OFF(GPIOD, LED_O_PIN)
-#define LED_R_OFF() LED_OFF(GPIOD, LED_R_PIN)
-#define LED_B_OFF() LED_OFF(GPIOD, LED_B_PIN)
+#define LED_G_OFF() LED_OFF(GPIOC, LED_G_PIN)
+#define LED_O_OFF() LED_OFF(GPIOC, LED_O_PIN)
+#define LED_R_OFF() LED_OFF(GPIOC, LED_R_PIN)
+#define LED_B_OFF() LED_OFF(GPIOC, LED_B_PIN)
 
 
 void init_module_led(void);

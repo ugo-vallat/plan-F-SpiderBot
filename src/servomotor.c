@@ -433,7 +433,6 @@ void sm_move(time_t t) {
     
     while (get_time() < end_time) {
         if(get_time() > next_update) {
-            SWITCH_G_LED();
             next_update = next_update + period;
             sm_next_state();
             sm_set_motor(SM_FRZ, g_state.angles[SM_FRZ]);

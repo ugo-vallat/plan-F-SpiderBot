@@ -47,10 +47,10 @@ Spider robot on stm32
 - B13 :
 - B14 :
 - B15 :
-- C0  : led
-- C1  : 
-- C2  :
-- C3  :
+- C0  : Board Green led
+- C1  : Board Red led
+- C2  : Board Orange led
+- C3  : Board Blue led
 - C4  :
 - C5  :
 - C6  :
@@ -74,11 +74,11 @@ Spider robot on stm32
 - D8  :
 - D9  :
 - D10 :
-- D11 : Board Green led
-- D12 : Board Orange led
-- D13 : Board Red led
-- D14 : Board Blue led
-- D15 :
+- D11 : 
+- D12 : 
+- D13 : 
+- D14 : 
+- D15 : 
 - E0  :
 - E1  :
 - E2  :
